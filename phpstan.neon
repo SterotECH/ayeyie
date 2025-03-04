@@ -1,0 +1,9 @@
+parameters:
+    level: max
+    paths:
+        - app
+        - tests
+    excludePaths:
+        - app/Models/*Factory.php
+    inferPrivatePropertyTypeFromConstructor: true
+    reportUnmatchedIgnoredErrors: true
