@@ -4,14 +4,13 @@
         <div
             class="absolute inset-0 bg-gradient-to-br from-amber-50 to-transparent dark:from-gray-900 dark:to-gray-800 opacity-50">
         </div>
-        <!-- Subtle background pattern using Alpine.js for animation -->
         <div class="absolute inset-0" x-data="{}" x-init="(() => {
             const svgNS = 'http://www.w3.org/2000/svg';
             const svg = document.createElementNS(svgNS, 'svg');
             svg.setAttribute('width', '100%');
             svg.setAttribute('height', '100%');
             svg.style.opacity = '0.03';
-        
+
             for (let i = 0; i < 20; i++) {
                 const circle = document.createElementNS(svgNS, 'circle');
                 circle.setAttribute('cx', Math.random() * 100 + '%');
@@ -20,11 +19,11 @@
                 circle.setAttribute('fill', 'currentColor');
                 svg.appendChild(circle);
             }
-        
+
             $el.appendChild(svg);
         })()"></div>
 
-        <div class="relative w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
+        <div class="relative w-full py-24 md:py-32">
             <section class="max-w-4xl mx-auto text-center">
                 <h1
                     class="text-4xl md:text-5xl lg:text-6xl font-bold text-[#1b1b18] dark:text-[#EDEDEC] mb-6 leading-tight tracking-tight">
@@ -69,7 +68,7 @@
                         </p>
                         <div class="flex flex-col sm:flex-row gap-4 justify-center">
                             <a href="{{ route('dashboard') }}"
-                                class="inline-flex items-center justify-center px-6 py-3 rounded-lg text-base font-medium bg-amber-500 text-white hover:bg-amber-600 focus:ring-4 focus:ring-amber-300 dark:focus:ring-amber-800 transition duration-300">
+                                class="inline-flex items-center justify-center px-6 py-3 rounded-lg text-base font-medium bg-amber-500 text-white hover:bg-amber-600 focus:ring-4 focus:ring-amber-300 dark:focus:ring-amber-800 transition duration-300" wire:navigate>
                                 <span>Go to Dashboard</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 h-5 w-5" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor">

@@ -24147,6 +24147,81 @@ namespace Illuminate\Testing {
             }
     }
 
+namespace App\Livewire\Admin\Product {
+    /**
+     * 
+     *
+     */
+    class Index {
+        /**
+         * 
+         *
+         * @see \Flux\FluxManager::bootModal()
+         * @param mixed $name
+         * @static 
+         */
+        public static function modal($name)
+        {
+            return \App\Livewire\Admin\Product\Index::modal($name);
+        }
+
+            }
+    /**
+     * 
+     *
+     */
+    class Create {
+        /**
+         * 
+         *
+         * @see \Flux\FluxManager::bootModal()
+         * @param mixed $name
+         * @static 
+         */
+        public static function modal($name)
+        {
+            return \App\Livewire\Admin\Product\Create::modal($name);
+        }
+
+            }
+    /**
+     * 
+     *
+     */
+    class Edit {
+        /**
+         * 
+         *
+         * @see \Flux\FluxManager::bootModal()
+         * @param mixed $name
+         * @static 
+         */
+        public static function modal($name)
+        {
+            return \App\Livewire\Admin\Product\Edit::modal($name);
+        }
+
+            }
+    /**
+     * 
+     *
+     */
+    class Show {
+        /**
+         * 
+         *
+         * @see \Flux\FluxManager::bootModal()
+         * @param mixed $name
+         * @static 
+         */
+        public static function modal($name)
+        {
+            return \App\Livewire\Admin\Product\Show::modal($name);
+        }
+
+            }
+    }
+
 
 namespace  {
     class App extends \Illuminate\Support\Facades\App {}
