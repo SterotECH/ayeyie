@@ -18,6 +18,8 @@ return new class() extends Migration
                 ->comment('Unique identifier for each product');
             $table->string('name', 100)
                 ->comment('Product name, e.g., Premium Feed');
+            $table->string('image')->nullable()
+                ->comment('Optional product image');
             $table->text('description')
                 ->nullable()
                 ->comment('Optional product details');

@@ -8,6 +8,8 @@ use Livewire\Volt\Volt;
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
+Volt::route('/product/{product}', 'welcome.products.show')
+    ->name('welcome.products.show');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])

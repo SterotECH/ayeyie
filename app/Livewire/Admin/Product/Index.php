@@ -29,7 +29,7 @@ class Index extends Component
     #[Url(history: true)]
     public string $sortDirection = 'asc';
 
-    public int $perPage = 10;
+    public int $perPage = 12;
 
     /**
      * Build the product query with advanced filtering and searching
@@ -43,7 +43,7 @@ class Index extends Component
         if (!empty($this->search)) {
             $query->where(function (Builder $q) {
                 $q->whereLike('name', "%{$this->search}%")
-                  ->orWhereLike('description', "%{$this->search}%");
+                    ->orWhereLike('description', "%{$this->search}%");
             });
         }
 
