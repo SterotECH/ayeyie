@@ -24222,6 +24222,81 @@ namespace App\Livewire\Admin\Product {
             }
     }
 
+namespace App\Livewire\Admin\Users {
+    /**
+     * 
+     *
+     */
+    class Index {
+        /**
+         * 
+         *
+         * @see \Flux\FluxManager::bootModal()
+         * @param mixed $name
+         * @static 
+         */
+        public static function modal($name)
+        {
+            return \App\Livewire\Admin\Users\Index::modal($name);
+        }
+
+            }
+    /**
+     * 
+     *
+     */
+    class Create {
+        /**
+         * 
+         *
+         * @see \Flux\FluxManager::bootModal()
+         * @param mixed $name
+         * @static 
+         */
+        public static function modal($name)
+        {
+            return \App\Livewire\Admin\Users\Create::modal($name);
+        }
+
+            }
+    /**
+     * 
+     *
+     */
+    class Edit {
+        /**
+         * 
+         *
+         * @see \Flux\FluxManager::bootModal()
+         * @param mixed $name
+         * @static 
+         */
+        public static function modal($name)
+        {
+            return \App\Livewire\Admin\Users\Edit::modal($name);
+        }
+
+            }
+    /**
+     * 
+     *
+     */
+    class Show {
+        /**
+         * 
+         *
+         * @see \Flux\FluxManager::bootModal()
+         * @param mixed $name
+         * @static 
+         */
+        public static function modal($name)
+        {
+            return \App\Livewire\Admin\Users\Show::modal($name);
+        }
+
+            }
+    }
+
 
 namespace  {
     class App extends \Illuminate\Support\Facades\App {}

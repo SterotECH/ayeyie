@@ -30,6 +30,15 @@ Route::middleware(['auth'])->group(function () {
             ->name('admin.products.edit');
         Route::get('/products/{product}', App\Livewire\Admin\Product\Show::class)
             ->name('admin.products.show');
+        Route::get('/users', App\Livewire\Admin\Users\Index::class)
+            ->name('admin.users.index');
+        Route::get('/users/create', App\Livewire\Admin\Users\Create::class)
+            ->name('admin.users.create');
+        Route::get('/users/{user}/edit', App\Livewire\Admin\Users\Edit::class)
+            ->name('admin.users.edit');
+        Route::get('/users/{user}', App\Livewire\Admin\Users\Show::class)
+            ->name('admin.users.show');
+        // Route::get('/transactions', App\Livewire\Admin\Transactions\Index
     });
 });
 

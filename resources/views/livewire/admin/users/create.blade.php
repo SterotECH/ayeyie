@@ -1,0 +1,86 @@
+<div>
+    <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+        <div class="md:grid md:grid-cols-3 md:gap-6">
+            <div class="md:col-span-1">
+                <div class="px-4 sm:px-0">
+                    <h3 class="text-accent text-lg font-medium">Create New User</h3>
+                    <p class="text-accent-content/50 mt-1 text-sm">
+                        Add a new user to the system with appropriate role and permissions.
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-5 md:col-span-2 md:mt-0">
+                <form wire:submit="save">
+                    <div class="overflow-hidden shadow sm:rounded-md">
+                        <div class="bg-white px-4 py-5 sm:p-6 dark:bg-gray-900"">
+                            @if (session('message'))
+                                <div class="mb-4 rounded border border-green-400 bg-green-100 px-4 py-2 text-green-700">
+                                    {{ session('message') }}
+                                </div>
+                            @endif
+
+                            @if (session('error'))
+                                <div class="mb-4 rounded border border-red-400 bg-red-100 px-4 py-2 text-red-700">
+                                    {{ session('error') }}
+                                </div>
+                            @endif
+
+                            <div class="grid grid-cols-6 gap-6">
+                                <div class="col-span-6 sm:col-span-4">
+                                    <flux:input name="name" wire:model="form.name" label="Full Name" />
+                                </div>
+                                <div class="col-span-6 sm:col-span-4">
+                                    <flux:input name="phone" type="tel" wire:model="form.phone"
+                                        label="Phone Number" />
+                                </div>
+                                <div class="col-span-6 sm:col-span-4">
+                                    <flux:input name="email" type="email" wire:model="form.email"
+                                        label="Email Address" />
+                                    <p class="text-xs text-gray-500">Optional for walk-in customers</p>
+                                </div>
+
+                                <!-- Password -->
+                                <div class="col-span-6 sm:col-span-4">
+                                    <flux:input name="password" type="password" wire:model="form.password"
+                                        label="Password" />
+                                    <p class="text-xs text-gray-500">Leave blank for unregistered walk-ins</p>
+                                </div>
+
+                                <!-- Password Confirmation -->
+                                <div class="col-span-6 sm:col-span-4">
+                                    <flux:input name="password" type="password" wire:model="form.password_confirmation"
+                                        label="Confirm Password" />
+                                </div>
+
+                                <!-- Role -->
+                                <div class="col-span-6 sm:col-span-3">
+                                    <flux:select id="role" wire:model="form.role" label="Role">
+                                        <flux:select.option value="customer">Customer</flux:select.option>
+                                        <flux:select.option value="staff">Staff</flux:select.option>
+                                        <flux:select.option value="admin">Admin</flux:select.option>
+                                    </flux:select>
+                                </div>
+
+                                <!-- Language -->
+                                <div class="col-span-6 sm:col-span-3">
+                                    <label class="block text-sm font-medium text-gray-700" for="language"></label>
+                                    <flux:select id="language" label="Preferred Language" wire:model="form.language">
+                                        <flux:select.option value="en">English</flux:select.option>
+                                        <flux:select.option value="tw">Twi</flux:select.option>
+                                    </flux:select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 px-4 py-3 text-right sm:px-6 dark:bg-gray-900">
+                            <flux:button type="submit" variant="primary">
+                                Create User
+                            </flux:button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

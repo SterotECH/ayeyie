@@ -39,7 +39,7 @@
                     <flux:navlist.item icon="archive-box" href="#" :current="request()->is('staff/stock')">
                         Stock Status
                     </flux:navlist.item> --}}
-                    <flux:navlist.item icon="shopping-cart" href="{{route('admin.products.index')}}" :current="request()->routeIs('admin.products*')" wire:navigate>
+                    <flux:navlist.item icon="shopping-cart" href="{{ route('admin.products.index') }}" :current="request()->routeIs('admin.products*')" wire:navigate>
                         Products
                     </flux:navlist.item>
                     <flux:navlist.item icon="exclamation-triangle" href="#"
@@ -52,7 +52,7 @@
                     <flux:navlist.item icon="document-text" href="#" :current="request()->is('admin/audit')">
                         Audit Logs
                     </flux:navlist.item>
-                    <flux:navlist.item icon="users" href="#" :current="request()->is('admin/users')">
+                    <flux:navlist.item icon="users" href="{{ route('admin.users.index') }}" :current="request()->routeIs('admin.users*')">
                         User Management
                     </flux:navlist.item>
                 </flux:navlist.group>
