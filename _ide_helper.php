@@ -24297,6 +24297,84 @@ namespace App\Livewire\Admin\Users {
             }
     }
 
+namespace App\Livewire\Admin\SuspiciousActivity {
+    /**
+     * 
+     *
+     */
+    class Index {
+        /**
+         * 
+         *
+         * @see \Flux\FluxManager::bootModal()
+         * @param mixed $name
+         * @static 
+         */
+        public static function modal($name)
+        {
+            return \App\Livewire\Admin\SuspiciousActivity\Index::modal($name);
+        }
+
+            }
+    /**
+     * 
+     *
+     */
+    class Show {
+        /**
+         * 
+         *
+         * @see \Flux\FluxManager::bootModal()
+         * @param mixed $name
+         * @static 
+         */
+        public static function modal($name)
+        {
+            return \App\Livewire\Admin\SuspiciousActivity\Show::modal($name);
+        }
+
+            }
+    }
+
+namespace App\Livewire\Admin\StockAlert {
+    /**
+     * 
+     *
+     */
+    class Index {
+        /**
+         * 
+         *
+         * @see \Flux\FluxManager::bootModal()
+         * @param mixed $name
+         * @static 
+         */
+        public static function modal($name)
+        {
+            return \App\Livewire\Admin\StockAlert\Index::modal($name);
+        }
+
+            }
+    /**
+     * 
+     *
+     */
+    class Show {
+        /**
+         * 
+         *
+         * @see \Flux\FluxManager::bootModal()
+         * @param mixed $name
+         * @static 
+         */
+        public static function modal($name)
+        {
+            return \App\Livewire\Admin\StockAlert\Show::modal($name);
+        }
+
+            }
+    }
+
 
 namespace  {
     class App extends \Illuminate\Support\Facades\App {}

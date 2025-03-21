@@ -42,11 +42,11 @@
                     <flux:navlist.item icon="shopping-cart" href="{{ route('admin.products.index') }}" :current="request()->routeIs('admin.products*')" wire:navigate>
                         Products
                     </flux:navlist.item>
-                    <flux:navlist.item icon="exclamation-triangle" href="#"
-                        :current="request()->is('admin/fraud')">
+                    <flux:navlist.item icon="exclamation-triangle" href="{{ route('admin.suspicious_activities.index') }}"
+                        :current="request()->routeIs('admin.suspicious_activities*')">
                         Fraud Alerts
                     </flux:navlist.item>
-                    <flux:navlist.item icon="bell" href="#" :current="request()->is('admin/stock')">
+                    <flux:navlist.item icon="bell" href="{{ route('admin.stock_alerts.index') }}" :current="request()->routeIs('admin.stock_alerts*')">
                         Stock Alerts
                     </flux:navlist.item>
                     <flux:navlist.item icon="document-text" href="#" :current="request()->is('admin/audit')">
