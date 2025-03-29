@@ -10,7 +10,7 @@ use Livewire\Form;
 
 class UserForms extends Form
 {
-    public ?int $userId;
+    public ?int $userId = null;
 
     public $name = '';
 
@@ -26,7 +26,7 @@ class UserForms extends Form
 
     public $language = 'en';
 
-    public ?User $user;
+    public ?User $user = null;
 
     /**
      * The store method to save the user to db
@@ -48,6 +48,7 @@ class UserForms extends Form
 
     public function setUser(User $user)
     {
+        $this->user = $user;
         $this->userId = $user->user_id;
         $this->name = $user->name;
         $this->phone = $user->phone;

@@ -1,15 +1,15 @@
 <div>
     <div class="mb-6 flex flex-col items-start justify-between md:flex-row md:items-center">
         <div>
-            <h1 class="text-accent text-2xl font-bold">Products</h1>
-            <p class="text-accent/50 text-sm">Manage your inventory</p>
+            <h1 class="text-accent text-2xl font-bold">Audit Logs</h1>
+            <p class="text-accent/50 text-sm">Monitor system activities</p>
         </div>
         <div class="mt-4 md:mt-0">
             <a class="text-sm text-gray-600 hover:text-gray-900" href="{{ route('dashboard') }}">
                 Dashboard
             </a>
             <span class="mx-2 text-gray-500">/</span>
-            <span class="text-sm text-gray-900">Products</span>
+            <span class="text-sm text-gray-900">Audit Logs</span>
         </div>
     </div>
 
@@ -19,40 +19,34 @@
             <div class="col-span-1 md:col-span-2">
                 <label class="sr-only" for="search">Search</label>
                 <div class="relative">
-                    <flux:input id="search" icon="magnifying-glass" wire:model.live="search"
-                        placeholder="Search products..." />
+                    <flux:input id="search" icon="magnifying-glass" wire:model.debounce.300ms="search"
+                        placeholder="Search audit logs..." />
                 </div>
             </div>
 
-            <!-- Price Range Filter -->
+            <!-- Date Filter -->
             <div>
-                <label class="sr-only" for="priceFilter">Price Filter</label>
-                <flux:select id="priceFilter" wire:model="priceFilter">
-                    <flux:select.option value="">All Prices</flux:select.option>
-                    <flux:select.option value="low">Under $25</flux:select.option>
-                    <flux:select.option value="medium">$25 - $100</flux:select.option>
-                    <flux:select.option value="high">Over $100</flux:select.option>
+                <label class="sr-only" for="dateFilter">Date Filter</label>
+                <flux:select id="dateFilter" wire:model="dateFilter">
+                    <flux:select.option value="">All Dates</flux:select.option>
+                    <flux:select.option value="today">Today</flux:select.option>
+                    <flux:select.option value="week">This Week</flux:select.option>
+                    <flux:select.option value="month">This Month</flux:select.option>
                 </flux:select>
             </div>
 
-            <!-- Stock Filter -->
+            <!-- Log Level Filter -->
             <div>
-                <label class="sr-only" for="stockFilter">Stock Filter</label>
-                <flux:select id="stockFilter" wire:model="stockFilter">
-                    <flux:select.option value="">All Stock Levels</flux:select.option>
-                    <flux:select.option value="in_stock">In Stock</flux:select.option>
-                    <flux:select.option value="low">Low Stock</flux:select.option>
-                    <flux:select.option value="out_of_stock">Out of Stock</flux:select.option>
+                <label class="sr-only" for="logLevelFilter">Log Level Filter</label>
+                <flux:select id="logLevelFilter" wire:model="logLevelFilter">
+                    <flux:select.option value="">All Levels</flux:select.option>
+                    <flux:select.option value="info">Info</flux:select.option>
+                    <flux:select.option value="warning">Warning</flux:select.option>
+                    <flux:select.option value="error">Error</flux:select.option>
+                    <flux:select.option value="critical">Critical</flux:select.option>
                 </flux:select>
             </div>
         </div>
-    </div>
-
-    <!-- Add Product Button -->
-    <div class="mb-4 flex justify-end">
-        <flux:button href="{{ route('admin.products.create') }}" wire:navigate variant="primary" icon="plus">
-            Add Product
-        </flux:button>
     </div>
 
     <!-- Desktop Table View -->
@@ -62,78 +56,80 @@
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
                         scope="col">
-                        Product
+                        User
                     </th>
                     <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
                         scope="col">
-                        Price
+                        Action
                     </th>
                     <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
                         scope="col">
-                        Stock
+                        Entity
                     </th>
                     <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
                         scope="col">
-                        Status
+                        Level
                     </th>
                     <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
                         scope="col">
-                        Threshold
+                        Date
                     </th>
                     <th class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500"
                         scope="col">
-                        Actions
+                        Action
                     </th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
-                @forelse($products as $product)
+                @forelse($logs as $log)
                     <tr class="hover:bg-gray-50">
                         <td class="whitespace-nowrap px-6 py-4">
-                            <div class="text-sm font-medium text-gray-900">{{ $product->name }}</div>
+                            <div class="text-sm font-medium text-gray-900">{{ $log->user->name ?? 'System' }}</div>
                         </td>
                         <td class="whitespace-nowrap px-6 py-4">
-                            <div class="text-sm text-gray-900">${{ number_format($product->price, 2) }}</div>
+                            <div class="text-sm text-gray-900">{{ $log->action }}</div>
                         </td>
                         <td class="whitespace-nowrap px-6 py-4">
-                            <div class="text-sm text-gray-900">{{ $product->stock_quantity }}</div>
+                            <div class="text-sm text-gray-900">
+                                {{ class_basename($log->entity_type) }} #{{ $log->entity_id }}
+                            </div>
                         </td>
                         <td class="whitespace-nowrap px-6 py-4">
-                            @if ($product->stock_quantity === 0)
+                            @if ($log->log_level === 'critical')
                                 <span
                                     class="inline-flex rounded-full bg-red-100 px-2 text-xs font-semibold leading-5 text-red-800">
-                                    Out of Stock
+                                    Critical
                                 </span>
-                            @elseif ($product->stock_quantity <= $product->threshold_quantity)
+                            @elseif ($log->log_level === 'error')
+                                <span
+                                    class="inline-flex rounded-full bg-orange-100 px-2 text-xs font-semibold leading-5 text-orange-800">
+                                    Error
+                                </span>
+                            @elseif ($log->log_level === 'warning')
                                 <span
                                     class="inline-flex rounded-full bg-yellow-100 px-2 text-xs font-semibold leading-5 text-yellow-800">
-                                    Low Stock
+                                    Warning
                                 </span>
                             @else
                                 <span
-                                    class="inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800">
-                                    In Stock
+                                    class="inline-flex rounded-full bg-blue-100 px-2 text-xs font-semibold leading-5 text-blue-800">
+                                    Info
                                 </span>
                             @endif
                         </td>
                         <td class="whitespace-nowrap px-6 py-4">
-                            <div class="text-sm text-gray-500">{{ $product->threshold_quantity }}</div>
+                            <div class="text-sm text-gray-500">{{ $log->logged_at->format('M d, Y H:i') }}</div>
                         </td>
                         <td class="whitespace-nowrap px-6 py-4 text-right">
-                            <div class="flex justify-end space-x-2">
-                                <flux:button href="{{ route('admin.products.show', $product) }}" variant="filled">
-                                    <flux:icon.eye class="size-4" />
-                                </flux:button>
-                                <flux:button href="{{ route('admin.products.edit', $product) }}" variant="filled">
-                                    <flux:icon.pencil-square class="size-4" />
-                                </flux:button>
-                            </div>
+                            <flux:button href="{{ route('admin.audit-logs.show', $log->log_id) }}" variant="filled">
+                                <flux:icon.eye class="size-4" />
+                            </flux:button>
                         </td>
                     </tr>
                 @empty
                     <tr>
                         <td class="px-6 py-4 text-center text-sm text-gray-500" colspan="6">
-                            No products found.
+                            No audit logs found.
                         </td>
                     </tr>
                 @endforelse
@@ -143,65 +139,66 @@
 
     <!-- Mobile Card View -->
     <div class="space-y-4 md:hidden">
-        @forelse($products as $product)
+        @forelse($logs as $log)
             <div class="overflow-hidden rounded-lg bg-white shadow">
                 <div class="flex justify-between px-4 py-5 sm:px-6">
                     <div>
-                        <h3 class="text-lg font-medium leading-6 text-gray-900">{{ $product->name }}</h3>
-                        <p class="mt-1 max-w-2xl text-sm text-gray-500">${{ number_format($product->price, 2) }}</p>
+                        <h3 class="text-lg font-medium leading-6 text-gray-900">{{ $log->action }}</h3>
+                        <p class="mt-1 max-w-2xl text-sm text-gray-500">{{ $log->logged_at->format('M d, Y H:i') }}
+                        </p>
                     </div>
-                    @if ($product->stock_quantity === 0)
+                    @if ($log->log_level === 'critical')
                         <span
                             class="inline-flex h-6 items-center rounded-full bg-red-100 px-2 text-xs font-semibold leading-5 text-red-800">
-                            Out of Stock
+                            Critical
                         </span>
-                    @elseif ($product->stock_quantity <= $product->threshold_quantity)
+                    @elseif ($log->log_level === 'error')
+                        <span
+                            class="inline-flex h-6 items-center rounded-full bg-orange-100 px-2 text-xs font-semibold leading-5 text-orange-800">
+                            Error
+                        </span>
+                    @elseif ($log->log_level === 'warning')
                         <span
                             class="inline-flex h-6 items-center rounded-full bg-yellow-100 px-2 text-xs font-semibold leading-5 text-yellow-800">
-                            Low Stock
+                            Warning
                         </span>
                     @else
                         <span
-                            class="inline-flex h-6 items-center rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800">
-                            In Stock
+                            class="inline-flex h-6 items-center rounded-full bg-blue-100 px-2 text-xs font-semibold leading-5 text-blue-800">
+                            Info
                         </span>
                     @endif
                 </div>
                 <div class="border-t border-gray-200">
                     <dl>
                         <div class="bg-gray-50 px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                            <dt class="text-sm font-medium text-gray-500">Stock</dt>
+                            <dt class="text-sm font-medium text-gray-500">User</dt>
                             <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                                {{ $product->stock_quantity }}
+                                {{ $log->user->name ?? 'System' }}
                             </dd>
                         </div>
                         <div class="bg-white px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                            <dt class="text-sm font-medium text-gray-500">Threshold</dt>
+                            <dt class="text-sm font-medium text-gray-500">Entity</dt>
                             <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                                {{ $product->threshold_quantity }}
+                                {{ class_basename($log->entity_type) }} #{{ $log->entity_id }}
                             </dd>
                         </div>
                     </dl>
                 </div>
                 <div class="bg-gray-50 px-4 py-4 text-right">
-                    <div class="flex justify-end space-x-2">
-                        <flux:button href="{{ route('admin.products.show', $product) }}" variant="filled">
-                            <flux:icon.eye class="-ml-1 mr-2 size-5" /> View
-                        </flux:button>
-                        <flux:button href="{{ route('admin.products.edit', $product) }}" variant="filled">
-                            <flux:icon.pencil-square class="-ml-1 mr-2 size-5" /> Edit
-                        </flux:button>
-                    </div>
+                    <flux:button href="{{ route('admin.audit-logs.show', $log->log_id) }}" variant="filled">
+                        <flux:icon.eye class="-ml-1 mr-2 size-5" /> View Details
+                    </flux:button>
                 </div>
             </div>
         @empty
             <div class="rounded-lg bg-white p-6 text-center text-gray-500 shadow">
-                No products found.
+                No audit logs found.
             </div>
         @endforelse
     </div>
 
     <div class="mt-4">
-        {{ $products->links() }}
+        {{ $logs->links() }}
     </div>
 </div>

@@ -23,13 +23,15 @@
             </flux:navlist>
             <flux:navlist variant="outline">
                 <flux:navlist.group heading="App" class="grid space-y-2">
-                    {{-- <flux:navlist.item icon="shopping-cart" href="#"
+                @if(Auth::user()->role === 'customer')
+                    <flux:navlist.item icon="shopping-cart" href="#"
                         :current="request()->routeIs('customer/orders')">
                         My Orders
                     </flux:navlist.item>
                     <flux:navlist.item icon="truck" href="#" :current="request()->is('customer/pickups')">
                         Pickups
                     </flux:navlist.item>
+                @elseif(Auth::User()->role === 'staff')
                     <flux:navlist.item icon="currency-dollar" href="#" :current="request()->is('staff/transactions')">
                         Process Payment
                     </flux:navlist.item>
@@ -38,7 +40,8 @@
                     </flux:navlist.item>
                     <flux:navlist.item icon="archive-box" href="#" :current="request()->is('staff/stock')">
                         Stock Status
-                    </flux:navlist.item> --}}
+                    </flux:navlist.item>
+                @elseif(Auth::user()->role === 'admin')
                     <flux:navlist.item icon="shopping-cart" href="{{ route('admin.products.index') }}" :current="request()->routeIs('admin.products*')" wire:navigate>
                         Products
                     </flux:navlist.item>
@@ -49,12 +52,13 @@
                     <flux:navlist.item icon="bell" href="{{ route('admin.stock_alerts.index') }}" :current="request()->routeIs('admin.stock_alerts*')">
                         Stock Alerts
                     </flux:navlist.item>
-                    <flux:navlist.item icon="document-text" href="#" :current="request()->is('admin/audit')">
+                    <flux:navlist.item icon="document-text" href="{{ route('admin.audit_logs.index') }}" :current="request()->routeIs('admin.audit_logs* ')">
                         Audit Logs
                     </flux:navlist.item>
                     <flux:navlist.item icon="users" href="{{ route('admin.users.index') }}" :current="request()->routeIs('admin.users*')">
                         User Management
                     </flux:navlist.item>
+                    @endif
                 </flux:navlist.group>
             </flux:navlist>
 

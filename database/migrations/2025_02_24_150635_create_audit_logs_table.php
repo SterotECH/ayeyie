@@ -29,12 +29,4 @@ return new class() extends Migration
                 ->comment('When action occurred');
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::dropIfExists('audit_logs');
-    }
 };

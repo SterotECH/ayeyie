@@ -24375,6 +24375,45 @@ namespace App\Livewire\Admin\StockAlert {
             }
     }
 
+namespace App\Livewire\Admin\AuditLog {
+    /**
+     * 
+     *
+     */
+    class Index {
+        /**
+         * 
+         *
+         * @see \Flux\FluxManager::bootModal()
+         * @param mixed $name
+         * @static 
+         */
+        public static function modal($name)
+        {
+            return \App\Livewire\Admin\AuditLog\Index::modal($name);
+        }
+
+            }
+    /**
+     * 
+     *
+     */
+    class Show {
+        /**
+         * 
+         *
+         * @see \Flux\FluxManager::bootModal()
+         * @param mixed $name
+         * @static 
+         */
+        public static function modal($name)
+        {
+            return \App\Livewire\Admin\AuditLog\Show::modal($name);
+        }
+
+            }
+    }
+
 
 namespace  {
     class App extends \Illuminate\Support\Facades\App {}
