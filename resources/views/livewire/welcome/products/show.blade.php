@@ -16,7 +16,7 @@ new class extends Component {
 }; ?>
 
 <div class="container mx-auto px-4 py-8">
-    <div class="overflow-hidden rounded-lg bg-white shadow-lg">
+    <div class="overflow-hidden rounded-lg bg-zinc-50 shadow-lg dark:bg-zinc-800">
         <div class="md:flex">
             <div class="md:w-1/2">
                 <div class="flex h-full items-center justify-center bg-gray-200">

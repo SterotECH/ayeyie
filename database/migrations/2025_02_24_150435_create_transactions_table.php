@@ -17,6 +17,7 @@ return new class() extends Migration
             $table->id('transaction_id')
                 ->comment('Unique identifier for each transaction');
             $table->foreignId('user_id')
+                ->nullable()
                 ->constrained('users', 'user_id')
                 ->comment('Staff who processed the transaction');
             $table->foreignId('customer_user_id')

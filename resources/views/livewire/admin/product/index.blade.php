@@ -13,7 +13,7 @@
         </div>
     </div>
 
-    <div class="mb-6 rounded-lg bg-white p-4 shadow">
+    <div class="mb-6 rounded-lg bg-zinc-50 p-4 shadow dark:bg-zinc-800">
         <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
             <!-- Search -->
             <div class="col-span-1 md:col-span-2">
@@ -56,9 +56,9 @@
     </div>
 
     <!-- Desktop Table View -->
-    <div class="hidden overflow-hidden rounded-lg bg-white shadow md:block">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+    <div class="hidden overflow-hidden rounded-lg bg-zinc-50 shadow md:block dark:bg-zinc-800">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-900">
+            <thead class="bg-gray-50 dark:bg-gray-700">
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
                         scope="col">
@@ -86,9 +86,9 @@
                     </th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 bg-white">
+            <tbody class="divide-y divide-gray-200 bg-zinc-50 dark:divide-gray-900 dark:bg-zinc-800">
                 @forelse($products as $product)
-                    <tr class="hover:bg-gray-50">
+                    <tr class="hover:bg-gray-50 dark:bg-gray-700">
                         <td class="whitespace-nowrap px-6 py-4">
                             <div class="text-sm font-medium text-gray-900">{{ $product->name }}</div>
                         </td>
@@ -144,7 +144,7 @@
     <!-- Mobile Card View -->
     <div class="space-y-4 md:hidden">
         @forelse($products as $product)
-            <div class="overflow-hidden rounded-lg bg-white shadow">
+            <div class="overflow-hidden rounded-lg bg-zinc-50 shadow dark:bg-zinc-800">
                 <div class="flex justify-between px-4 py-5 sm:px-6">
                     <div>
                         <h3 class="text-lg font-medium leading-6 text-gray-900">{{ $product->name }}</h3>
@@ -169,13 +169,13 @@
                 </div>
                 <div class="border-t border-gray-200">
                     <dl>
-                        <div class="bg-gray-50 px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <div class="bg-gray-50 px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-gray-700">
                             <dt class="text-sm font-medium text-gray-500">Stock</dt>
                             <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
                                 {{ $product->stock_quantity }}
                             </dd>
                         </div>
-                        <div class="bg-white px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <div class="bg-zinc-50 px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-zinc-800">
                             <dt class="text-sm font-medium text-gray-500">Threshold</dt>
                             <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
                                 {{ $product->threshold_quantity }}
@@ -183,7 +183,7 @@
                         </div>
                     </dl>
                 </div>
-                <div class="bg-gray-50 px-4 py-4 text-right">
+                <div class="bg-gray-50 px-4 py-4 text-right dark:bg-gray-700">
                     <div class="flex justify-end space-x-2">
                         <flux:button href="{{ route('admin.products.show', $product) }}" variant="filled">
                             <flux:icon.eye class="-ml-1 mr-2 size-5" /> View
@@ -195,7 +195,7 @@
                 </div>
             </div>
         @empty
-            <div class="rounded-lg bg-white p-6 text-center text-gray-500 shadow">
+            <div class="rounded-lg bg-zinc-50 p-6 text-center text-gray-500 shadow dark:bg-zinc-800">
                 No products found.
             </div>
         @endforelse

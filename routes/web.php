@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Livewire\Admin;
+use App\Livewire\Customer;
 use App\Models\AuditLog;
 
 Route::get('/', function () {
@@ -57,6 +58,22 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/audit_logs/{log}', Admin\AuditLog\Show::class)
             ->name('admin.audit_logs.show');
     });
+    Route::prefix('/customers')->group(function () {
+        Route::get('/orders', Customer\Orders\Index::class)
+            ->name('customers.orders.index');
+        Route::get('/orders/create', Customer\Orders\Create::class)
+            ->name('customers.orders.create');
+        Route::get('/orders/{transaction}', Customer\Orders\Show::class)
+            ->name('customers.orders.show');
+        Route::get('/orders/{transaction}/edit', Customer\Orders\Edit::class)
+            ->name('customers.orders.edit');
+
+        Route::get('/pickups', Customer\Pickup\Index::class)
+            ->name('customers.pickups.index');
+        Route::get('/pickups/{pickup}', Customer\Pickup\Show::class)
+            ->name('customers.pickups.show');
+    });
+    Route::prefix('/staff')->group(function () {});
 });
 
 require __DIR__ . '/auth.php';

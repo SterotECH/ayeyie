@@ -42,13 +42,13 @@
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <!-- Alert Details Card -->
         <div class="lg:col-span-1">
-            <div class="overflow-hidden rounded-lg bg-white shadow">
+            <div class="overflow-hidden rounded-lg bg-zinc-50 shadow dark:bg-zinc-800">
                 <div class="border-b border-gray-200 px-4 py-5 sm:px-6">
                     <h3 class="text-lg font-medium leading-6 text-gray-900">Alert Information</h3>
                 </div>
 
                 {{-- <div class="px-4 py-5 sm:p-0">
-                    <dl class="sm:divide-y sm:divide-gray-200">
+                    <dl class="sm:divide-y sm:divide-gray-200 dark:divide-gray-900">
                         <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
                             <dt class="text-sm font-medium text-gray-500">Product</dt>
                             <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{{ $product->name }}</dd>

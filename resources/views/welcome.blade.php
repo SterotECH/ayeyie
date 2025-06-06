@@ -52,7 +52,7 @@
                                     d="M14 5l7 7m0 0l-7 7m7-7H3" />
                             </svg>
                         </a>
-                        <a class="inline-flex items-center justify-center rounded-lg border border-[#19140035] bg-[#FDFDFC] px-8 py-3.5 text-lg font-medium text-[#1b1b18] transition duration-300 hover:bg-gray-50 focus:ring-4 focus:ring-gray-200 dark:border-[#3E3E3A] dark:bg-[#1b1b18] dark:text-[#EDEDEC] dark:hover:bg-[#33332d] dark:focus:ring-[#62605b]"
+                        <a class="inline-flex items-center justify-center rounded-lg border border-[#19140035] bg-[#FDFDFC] px-8 py-3.5 text-lg font-medium text-[#1b1b18] transition duration-300 hover:bg-gray-50 focus:ring-4 focus:ring-gray-200 dark:border-[#3E3E3A] dark:bg-[#1b1b18] dark:bg-gray-700 dark:text-[#EDEDEC] dark:hover:bg-[#33332d] dark:focus:ring-[#62605b]"
                             href="{{ route('login') }}">
                             Sign In
                         </a>
@@ -67,24 +67,13 @@
                                 class="font-semibold text-amber-600 dark:text-amber-400">{{ auth()->user()->name }}</span>
                         </p>
                         <div class="flex flex-col justify-center gap-4 sm:flex-row">
-                            <a class="inline-flex items-center justify-center rounded-lg bg-amber-500 px-6 py-3 text-base font-medium text-white transition duration-300 hover:bg-amber-600 focus:ring-4 focus:ring-amber-300 dark:focus:ring-amber-800"
-                                href="{{ route('dashboard') }}" wire:navigate>
+                            <flux:button href="{{ route('dashboard') }}" wire:navigate icon:trailing="chevron-down"
+                                variant="primary">
                                 <span>Go to Dashboard</span>
-                                <svg class="ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5l7 7-7 7" />
-                                </svg>
-                            </a>
-                            <a class="inline-flex items-center justify-center rounded-lg border border-[#19140035] bg-[#FDFDFC] px-6 py-3 text-base font-medium text-[#1b1b18] transition duration-300 hover:bg-gray-50 focus:ring-4 focus:ring-gray-200 dark:border-[#3E3E3A] dark:bg-[#1b1b18] dark:text-[#EDEDEC] dark:hover:bg-[#33332d] dark:focus:ring-[#62605b]"
-                                href="#">
-                                <svg class="mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                </svg>
+                            </flux:button>
+                            <flux:button href="{{ route('customers.orders.create') }}" icon="plus" wire:navigate>
                                 <span>New Order</span>
-                            </a>
+                            </flux:button>
                         </div>
                     </div>
                 @endauth
@@ -391,7 +380,7 @@
         <div class="mx-auto w-full max-w-7xl px-4 text-center sm:px-6 lg:px-8">
             @guest
                 <h3 class="mb-4 text-2xl font-bold text-white">Ready to Simplify Your Feed Management?</h3>
-                <a class="inline-flex items-center justify-center rounded-lg bg-white px-8 py-3 text-lg font-medium text-amber-600 shadow-lg transition duration-300 hover:bg-gray-100 focus:ring-4 focus:ring-amber-300"
+                <a class="inline-flex items-center justify-center rounded-lg bg-zinc-50 px-8 py-3 text-lg font-medium text-amber-600 shadow-lg transition duration-300 hover:bg-gray-100 focus:ring-4 focus:ring-amber-300 dark:bg-zinc-800"
                     href="{{ route('register') }}">
                     Join Now
                     <svg class="ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -402,7 +391,7 @@
             @endguest
             @auth
                 <h3 class="mb-4 text-2xl font-bold text-white">Welcome, {{ auth()->user()->name }}!</h3>
-                <a class="inline-flex items-center justify-center rounded-lg bg-white px-8 py-3 text-lg font-medium text-amber-600 shadow-lg transition duration-300 hover:bg-gray-100 focus:ring-4 focus:ring-amber-300"
+                <a class="inline-flex items-center justify-center rounded-lg bg-zinc-50 px-8 py-3 text-lg font-medium text-amber-600 shadow-lg transition duration-300 hover:bg-gray-100 focus:ring-4 focus:ring-amber-300 dark:bg-zinc-800"
                     href="{{ route('dashboard') }}">
                     Start Managing
                     <svg class="ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"

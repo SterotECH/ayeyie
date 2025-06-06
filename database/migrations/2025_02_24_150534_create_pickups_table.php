@@ -21,6 +21,7 @@ return new class() extends Migration
                 ->unique()
                 ->comment('Linked receipt');
             $table->foreignId('user_id')
+                ->nullable()
                 ->constrained('users', 'user_id')
                 ->comment('Staff who processed pickup');
             $table->enum('pickup_status', ['pending', 'completed'])
@@ -33,13 +34,5 @@ return new class() extends Migration
                 ->comment('Sync status for offline mode');
             $table->timestamps();
         });
-    }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::dropIfExists('pickups');
     }
 };

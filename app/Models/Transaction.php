@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Carbon\CarbonImmutable;
 
 /**
  * Transaction model representing the transactions table.
@@ -19,11 +20,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property float $total_amount Total payment amount
  * @property string $payment_status Payment state (pending, completed, failed)
  * @property string $payment_method Method, e.g., cash, card
- * @property \Illuminate\Support\Carbon $transaction_date When the transaction occurred
+ * @property CarbonImmutable $transaction_date When the transaction occurred
  * @property bool $is_synced Sync status for offline mode
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read User $user Staff who processed the transaction
+ * @property CarbonImmutable|null $created_at
+ * @property CarbonImmutable|null $updated_at
+ * @property-read User $staff Staff who processed the transaction
  * @property-read User|null $customer Customer who ordered (if registered)
  * @property-read Receipt|null $receipt Receipt associated with this transaction
  * @property-read \Illuminate\Database\Eloquent\Collection<int, TransactionItem> $items Items in this transaction
@@ -60,7 +61,7 @@ final class Transaction extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'total_amount' => 'float',
+        'total_amount' => 'decimal:2',
         'payment_status' => 'string',
         'transaction_date' => 'datetime',
         'is_synced' => 'boolean',
@@ -73,7 +74,7 @@ final class Transaction extends Model
      *
      * @return BelongsTo<User, $this>
      */
-    public function user(): BelongsTo
+    public function staff(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'user_id');
     }
@@ -85,7 +86,7 @@ final class Transaction extends Model
      */
     public function customer(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'customer_user_id', 'user_id')->nullable();
+        return $this->belongsTo(User::class, 'customer_user_id', 'user_id');
     }
 
     /**

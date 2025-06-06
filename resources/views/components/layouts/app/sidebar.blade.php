@@ -1,20 +1,20 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace("_", "-", app()->getLocale()) }}" class="dark">
+<html class="dark" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
     <head>
-        @include("partials.head")
+        @include('partials.head')
     </head>
 
-    <body class="min-h-screen bg-white dark:bg-zinc-800">
-        <flux:sidebar sticky stashable class="border-r border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+    <body class="min-h-screen bg-zinc-50 dark:bg-zinc-800 dark:bg-zinc-800">
+        <flux:sidebar class="border-r border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900" sticky stashable>
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
-            <a href="{{ route("dashboard") }}" class="mr-5 flex items-center space-x-2" wire:navigate>
+            <a class="mr-5 flex items-center space-x-2" href="{{ route('dashboard') }}" wire:navigate>
                 <x-app-logo class="size-8" href="#"></x-app-logo>
             </a>
 
             <flux:navlist variant="outline">
-                <flux:navlist.group heading="Platform" class="grid">
+                <flux:navlist.group class="grid" heading="Platform">
                     <flux:navlist.item icon="home" :href="route('dashboard')"
                         :current="request()->routeIs('dashboard')" wire:navigate>
                         Dashboard
@@ -22,42 +22,47 @@
                 </flux:navlist.group>
             </flux:navlist>
             <flux:navlist variant="outline">
-                <flux:navlist.group heading="App" class="grid space-y-2">
-                @if(Auth::user()->role === 'customer')
-                    <flux:navlist.item icon="shopping-cart" href="#"
-                        :current="request()->routeIs('customer/orders')">
-                        My Orders
-                    </flux:navlist.item>
-                    <flux:navlist.item icon="truck" href="#" :current="request()->is('customer/pickups')">
-                        Pickups
-                    </flux:navlist.item>
-                @elseif(Auth::User()->role === 'staff')
-                    <flux:navlist.item icon="currency-dollar" href="#" :current="request()->is('staff/transactions')">
-                        Process Payment
-                    </flux:navlist.item>
-                    <flux:navlist.item icon="truck" href="#" :current="request()->is('staff/pickups')">
-                        Verify Pickup
-                    </flux:navlist.item>
-                    <flux:navlist.item icon="archive-box" href="#" :current="request()->is('staff/stock')">
-                        Stock Status
-                    </flux:navlist.item>
-                @elseif(Auth::user()->role === 'admin')
-                    <flux:navlist.item icon="shopping-cart" href="{{ route('admin.products.index') }}" :current="request()->routeIs('admin.products*')" wire:navigate>
-                        Products
-                    </flux:navlist.item>
-                    <flux:navlist.item icon="exclamation-triangle" href="{{ route('admin.suspicious_activities.index') }}"
-                        :current="request()->routeIs('admin.suspicious_activities*')">
-                        Fraud Alerts
-                    </flux:navlist.item>
-                    <flux:navlist.item icon="bell" href="{{ route('admin.stock_alerts.index') }}" :current="request()->routeIs('admin.stock_alerts*')">
-                        Stock Alerts
-                    </flux:navlist.item>
-                    <flux:navlist.item icon="document-text" href="{{ route('admin.audit_logs.index') }}" :current="request()->routeIs('admin.audit_logs* ')">
-                        Audit Logs
-                    </flux:navlist.item>
-                    <flux:navlist.item icon="users" href="{{ route('admin.users.index') }}" :current="request()->routeIs('admin.users*')">
-                        User Management
-                    </flux:navlist.item>
+                <flux:navlist.group class="grid space-y-2" heading="App">
+                    @if (Auth::user()->role === 'customer')
+                        <flux:navlist.item href="{{ route('customers.orders.index') }}" icon="shopping-cart"
+                            :current="request()-> routeIs('customers.orders*')">
+                            My Orders
+                        </flux:navlist.item>
+                        <flux:navlist.item href="{{ route('customers.pickups.index')}}" icon="truck" :current="request()->routeIs('customers.pickups*')">
+                            Pickups
+                        </flux:navlist.item>
+                    @elseif(Auth::User()->role === 'staff')
+                        <flux:navlist.item href="#" icon="currency-dollar"
+                            :current="request()->is('staff/transactions')">
+                            Process Payment
+                        </flux:navlist.item>
+                        <flux:navlist.item href="#" icon="truck" :current="request()->is('staff/pickups')">
+                            Verify Pickup
+                        </flux:navlist.item>
+                        <flux:navlist.item href="#" icon="archive-box" :current="request()->is('staff/stock')">
+                            Stock Status
+                        </flux:navlist.item>
+                    @elseif(Auth::user()->role === 'admin')
+                        <flux:navlist.item href="{{ route('admin.products.index') }}" icon="shopping-cart"
+                            :current="request()->routeIs('admin.products*')" wire:navigate>
+                            Products
+                        </flux:navlist.item>
+                        <flux:navlist.item href="{{ route('admin.suspicious_activities.index') }}"
+                            icon="exclamation-triangle" :current="request()->routeIs('admin.suspicious_activities*')">
+                            Fraud Alerts
+                        </flux:navlist.item>
+                        <flux:navlist.item href="{{ route('admin.stock_alerts.index') }}" icon="bell"
+                            :current="request()->routeIs('admin.stock_alerts*')">
+                            Stock Alerts
+                        </flux:navlist.item>
+                        <flux:navlist.item href="{{ route('admin.audit_logs.index') }}" icon="document-text"
+                            :current="request()->routeIs('admin.audit_logs* ')">
+                            Audit Logs
+                        </flux:navlist.item>
+                        <flux:navlist.item href="{{ route('admin.users.index') }}" icon="users"
+                            :current="request()->routeIs('admin.users*')">
+                            User Management
+                        </flux:navlist.item>
                     @endif
                 </flux:navlist.group>
             </flux:navlist>
@@ -96,10 +101,10 @@
 
                     <flux:menu.separator />
 
-                    <form method="POST" action="{{ route("logout") }}" class="w-full">
+                    <form class="w-full" method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle"
-                            class="w-full">
+                        <flux:menu.item class="w-full" type="submit" as="button"
+                            icon="arrow-right-start-on-rectangle">
                             Log Out
                         </flux:menu.item>
                     </form>
@@ -143,10 +148,10 @@
 
                     <flux:menu.separator />
 
-                    <form method="POST" action="{{ route("logout") }}" class="w-full">
+                    <form class="w-full" method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle"
-                            class="w-full">
+                        <flux:menu.item class="w-full" type="submit" as="button"
+                            icon="arrow-right-start-on-rectangle">
                             Log Out
                         </flux:menu.item>
                     </form>

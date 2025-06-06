@@ -12,7 +12,7 @@
             </div>
         </div>
 
-        <div class="overflow-hidden bg-white shadow sm:rounded-lg dark:bg-slate-900">
+        <div class="overflow-hidden bg-zinc-50 shadow sm:rounded-lg dark:bg-slate-900 dark:bg-zinc-800">
             <div class="flex items-center justify-between px-4 py-5 sm:px-6">
                 <div>
                     <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-slate-50">
@@ -28,7 +28,7 @@
             </div>
             <div class="border-t border-gray-200">
                 <dl>
-                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-gray-700">
                         <dt class="text-sm font-medium text-gray-500">
                             User
                         </dt>
@@ -39,7 +39,8 @@
                             @endif
                         </dd>
                     </div>
-                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-slate-900">
+                    <div
+                        class="bg-zinc-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-slate-900 dark:bg-zinc-800">
                         <dt class="text-sm font-medium text-gray-500">
                             Entity Type
                         </dt>
@@ -47,7 +48,7 @@
                             {{ $activity->entity_type }}
                         </dd>
                     </div>
-                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-gray-700">
                         <dt class="text-sm font-medium text-gray-500">
                             Entity ID
                         </dt>
@@ -55,7 +56,8 @@
                             {{ $activity->entity_id }}
                         </dd>
                     </div>
-                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-slate-900">
+                    <div
+                        class="bg-zinc-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-slate-900 dark:bg-zinc-800">
                         <dt class="text-sm font-medium text-gray-500">
                             Description
                         </dt>
@@ -63,7 +65,7 @@
                             {{ $activity->description }}
                         </dd>
                     </div>
-                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-gray-700">
                         <dt class="text-sm font-medium text-gray-500">
                             Created At
                         </dt>
@@ -71,7 +73,8 @@
                             {{ $activity->created_at->format('F j, Y \a\t g:i a') }}
                         </dd>
                     </div>
-                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-slate-900">
+                    <div
+                        class="bg-zinc-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-slate-900 dark:bg-zinc-800">
                         <dt class="text-sm font-medium text-gray-500">
                             Updated At
                         </dt>

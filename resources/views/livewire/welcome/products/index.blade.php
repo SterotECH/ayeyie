@@ -25,7 +25,8 @@ new class extends Component {
 
     <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         @forelse ($products as $product)
-            <div class="overflow-hidden rounded-lg bg-white shadow-md transition-shadow duration-300 hover:shadow-lg">
+            <div
+                class="overflow-hidden rounded-lg bg-zinc-50 shadow-md transition-shadow duration-300 hover:shadow-lg dark:bg-zinc-800">
                 <div class="p-6">
                     <h2 class="mb-2 text-xl font-bold">{{ $product->name }}</h2>
                     <p class="mb-4 text-gray-600">{{ Str::limit($product->description, 100) }}</p>

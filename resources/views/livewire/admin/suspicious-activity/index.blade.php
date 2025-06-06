@@ -14,7 +14,7 @@
                 </div>
             </div>
 
-            <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+            <div class="overflow-hidden bg-zinc-50 shadow-sm sm:rounded-lg dark:bg-zinc-800">
                 <!-- Filter Section -->
                 <div class="border-b border-gray-200 p-6">
                     <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
@@ -63,8 +63,8 @@
 
                 <!-- Table Section -->
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-900">
+                        <thead class="bg-gray-50 dark:bg-gray-700">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
                                     scope="col">
@@ -172,7 +172,7 @@
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-200 bg-white">
+                        <tbody class="divide-y divide-gray-200 bg-zinc-50 dark:divide-gray-900 dark:bg-zinc-800">
                             @forelse($activities as $activity)
                                 <tr wire:key="activity-{{ $activity->activity_id }}">
                                     <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">

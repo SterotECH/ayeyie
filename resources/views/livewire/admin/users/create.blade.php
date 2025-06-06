@@ -13,7 +13,7 @@
             <div class="mt-5 md:col-span-2 md:mt-0">
                 <form wire:submit="save">
                     <div class="overflow-hidden shadow sm:rounded-md">
-                        <div class="bg-white px-4 py-5 sm:p-6 dark:bg-gray-900"">
+                        <div class="bg-zinc-50 px-4 py-5 sm:p-6 dark:bg-gray-900 dark:bg-zinc-800"">
                             @if (session('message'))
                                 <div class="mb-4 rounded border border-green-400 bg-green-100 px-4 py-2 text-green-700">
                                     {{ session('message') }}
@@ -73,7 +73,7 @@
                             </div>
                         </div>
 
-                        <div class="bg-gray-50 px-4 py-3 text-right sm:px-6 dark:bg-gray-900">
+                        <div class="bg-gray-50 px-4 py-3 text-right sm:px-6 dark:bg-gray-700 dark:bg-gray-900">
                             <flux:button type="submit" variant="primary">
                                 Create User
                             </flux:button>

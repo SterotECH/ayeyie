@@ -1,7 +1,7 @@
 <div>
     <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
         <!-- User Information Section -->
-        <div class="overflow-hidden bg-white shadow sm:rounded-lg dark:bg-slate-800">
+        <div class="overflow-hidden bg-zinc-50 shadow sm:rounded-lg dark:bg-slate-800 dark:bg-zinc-800">
             <div class="px-4 py-5 sm:px-6">
                 <div class="flex items-center justify-between">
                     <div>
@@ -23,12 +23,14 @@
             </div>
             <div class="dark:border-accent border-t border-gray-200">
                 <dl>
-                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-slate-900">
+                    <div
+                        class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-gray-700 dark:bg-slate-900">
                         <dt class="text-sm font-medium text-gray-500 dark:text-white">Full name</dt>
                         <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 dark:text-gray-50">
                             {{ $user->name }}</dd>
                     </div>
-                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-slate-800">
+                    <div
+                        class="bg-zinc-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-slate-800 dark:bg-zinc-800">
                         <dt class="text-sm font-medium text-gray-500 dark:text-white">Role</dt>
                         <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 dark:text-gray-50">
                             <span
@@ -41,28 +43,33 @@
                             </span>
                         </dd>
                     </div>
-                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-slate-900">
+                    <div
+                        class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-gray-700 dark:bg-slate-900">
                         <dt class="text-sm font-medium text-gray-500 dark:text-white">Email address</dt>
                         <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 dark:text-gray-50">
                             {{ $user->email ?? 'Not provided' }}</dd>
                     </div>
-                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-slate-800">
+                    <div
+                        class="bg-zinc-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-slate-800 dark:bg-zinc-800">
                         <dt class="text-sm font-medium text-gray-500 dark:text-white">Phone number</dt>
                         <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 dark:text-gray-50">
                             {{ $user->phone }}</dd>
                     </div>
-                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-slate-900">
+                    <div
+                        class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-gray-700 dark:bg-slate-900">
                         <dt class="text-sm font-medium text-gray-500 dark:text-white">Language</dt>
                         <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 dark:text-gray-50">
                             {{ $user->language === 'en' ? 'English' : 'Twi' }}
                         </dd>
                     </div>
-                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-slate-800">
+                    <div
+                        class="bg-zinc-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-slate-800 dark:bg-zinc-800">
                         <dt class="text-sm font-medium text-gray-500 dark:text-white">Account created</dt>
                         <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 dark:text-gray-50">
                             {{ $user->created_at->format('F j, Y g:i A') }}</dd>
                     </div>
-                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-slate-900">
+                    <div
+                        class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-gray-700 dark:bg-slate-900">
                         <dt class="text-sm font-medium text-gray-500 dark:text-white">Last updated</dt>
                         <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 dark:text-gray-50">
                             {{ $user->updated_at->format('F j, Y g:i A') }}</dd>
@@ -158,12 +165,12 @@
         <div class="fixed inset-0 z-10 overflow-y-auto" role="dialog" aria-labelledby="modal-title" aria-modal="true"
             style="display: none;" x-show="show">
             <div class="flex min-h-screen items-end justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 bg-gray-50 backdrop-blur-sm transition-opacity dark:bg-black/75"
+                <div class="fixed inset-0 bg-gray-50 backdrop-blur-sm transition-opacity dark:bg-black/75 dark:bg-gray-700"
                     aria-hidden="true" x-show="show"></div>
                 <span class="hidden sm:inline-block sm:h-screen sm:align-middle" aria-hidden="true">&#8203;</span>
-                <div class="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle dark:bg-slate-800"
+                <div class="inline-block transform overflow-hidden rounded-lg bg-zinc-50 text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle dark:bg-slate-800 dark:bg-zinc-800"
                     x-show="show">
-                    <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4 dark:bg-slate-800">
+                    <div class="bg-zinc-50 px-4 pb-4 pt-5 sm:p-6 sm:pb-4 dark:bg-slate-800 dark:bg-zinc-800">
                         <div class="sm:flex sm:items-start">
                             <div
                                 class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
@@ -189,7 +196,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 dark:bg-slate-900">
+                    <div
+                        class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 dark:bg-gray-700 dark:bg-slate-900">
                         <flux:button class="sm:ml-3" variant="danger" wire:click="deleteUser">
                             Delete
                         </flux:button>

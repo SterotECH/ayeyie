@@ -1,6 +1,6 @@
-<div class="overflow-hidden rounded-lg bg-white shadow-xl dark:bg-gray-900">
+<div class="overflow-hidden rounded-lg bg-zinc-50 shadow-xl dark:bg-gray-900 dark:bg-zinc-800">
     <div
-        class="flex flex-col items-start justify-between gap-4 border-b border-gray-200 bg-gray-50 px-6 py-4 md:flex-row md:items-center dark:border-gray-700 dark:bg-gray-800">
+        class="flex flex-col items-start justify-between gap-4 border-b border-gray-200 bg-gray-50 px-6 py-4 md:flex-row md:items-center dark:border-gray-700 dark:bg-gray-700 dark:bg-gray-800">
         <h2 class="flex items-center gap-2 text-xl font-semibold text-gray-800 dark:text-white">
             <svg class="h-6 w-6 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
@@ -37,7 +37,7 @@
                             <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Filter by
                                 role</label>
                             <select
-                                class="block w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                                class="block w-full rounded-lg border border-gray-300 bg-zinc-50 p-2.5 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:bg-zinc-800 dark:text-white"
                                 wire:model.live.debounce="selectedRoleFilter">
                                 <option value="">All roles</option>
                                 @foreach ($roles as $role)
@@ -78,8 +78,8 @@
 
     <!-- Users Table -->
     <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead class="bg-gray-50 dark:bg-gray-800">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 dark:divide-gray-900">
+            <thead class="bg-gray-50 dark:bg-gray-700 dark:bg-gray-800">
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
                         scope="col">
@@ -139,7 +139,8 @@
                     </th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
+            <tbody
+                class="divide-y divide-gray-200 bg-zinc-50 dark:divide-gray-700 dark:divide-gray-900 dark:bg-gray-900 dark:bg-zinc-800">
                 @forelse ($users as $user)
                     <tr>
                         <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">

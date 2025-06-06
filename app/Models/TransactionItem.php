@@ -32,4 +32,14 @@ final class TransactionItem extends Model
     {
         return $this->belongsTo(Transaction::class, 'transaction_id', 'transaction_id');
     }
+
+    /**
+     * Get the product associated with the transaction item.
+     *
+     * @return BelongsTo<Product, $this>
+     */
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'product_id', 'product_id');
+    }
 }

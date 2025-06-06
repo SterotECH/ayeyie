@@ -5,7 +5,6 @@ namespace App\Livewire\Forms\Admin;
 use App\Livewire\Actions\Admin\User\CreateUser;
 use App\Livewire\Actions\Admin\User\UpdateUser;
 use App\Models\User;
-use Livewire\Attributes\Rule;
 use Livewire\Form;
 
 class UserForms extends Form
@@ -78,7 +77,6 @@ class UserForms extends Form
             'name' => $this->name,
             'phone' => $this->phone,
             'email' => $this->email,
-            'password' => $this->password,
             'role' => $this->role,
             'language' => $this->language
         ]);

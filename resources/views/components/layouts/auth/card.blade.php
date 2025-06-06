@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html class="dark" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
     <head>
         @include('partials.head')
     </head>
-    <body class="min-h-screen bg-neutral-100 antialiased dark:bg-linear-to-b dark:from-neutral-950 dark:to-neutral-900">
+
+    <body class="dark:bg-linear-to-b min-h-screen bg-neutral-100 antialiased dark:from-neutral-950 dark:to-neutral-900">
         <div class="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
             <div class="flex w-full max-w-md flex-col gap-6">
-                <a href="{{ route('home') }}" class="flex flex-col items-center gap-2 font-medium">
+                <a class="flex flex-col items-center gap-2 font-medium" href="{{ route('home') }}">
                     <span class="flex h-9 w-9 items-center justify-center rounded-md">
                         <x-app-logo-icon class="size-9 fill-current text-black dark:text-white" />
                     </span>
@@ -15,7 +17,8 @@
                 </a>
 
                 <div class="flex flex-col gap-6">
-                    <div class="rounded-xl border bg-white dark:bg-stone-950 dark:border-stone-800 text-stone-800 shadow-xs">
+                    <div
+                        class="shadow-xs rounded-xl border bg-zinc-50 text-stone-800 dark:border-stone-800 dark:bg-stone-950 dark:bg-zinc-800">
                         <div class="px-10 py-8">{{ $slot }}</div>
                     </div>
                 </div>
@@ -23,4 +26,5 @@
         </div>
         @fluxScripts
     </body>
+
 </html>

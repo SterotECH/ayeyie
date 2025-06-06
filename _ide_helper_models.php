@@ -25,11 +25,18 @@ namespace App\Models{
  * @property CarbonImmutable|null $created_at
  * @property CarbonImmutable|null $updated_at
  * @property-read User $user User who performed the action
- * @property-read Model|MorphTo $entity Morphable entity (e.g., Transaction, User)
+ * @property-read Model|Transaction|User|Product|StockAlert $entity Morphable entity (e.g., Transaction, User)
  * @method static \Database\Factories\AuditLogFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereAction($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereDetails($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereEntityId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereEntityType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereLogId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereLoggedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereUserId($value)
  */
 	final class AuditLog extends \Eloquent {}
 }
@@ -52,6 +59,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Pickup newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Pickup newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Pickup query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pickup whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pickup whereIsSynced($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pickup wherePickupDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pickup wherePickupId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pickup wherePickupStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pickup whereReceiptId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pickup whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pickup whereUserId($value)
  */
 	final class Pickup extends \Eloquent {}
 }
@@ -70,12 +85,22 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, StockAlert> $stockAlerts Stock alerts for this product
  * @property-read \Illuminate\Database\Eloquent\Collection<int, TransactionItem> $transactionItems Transaction items involving this product
+ * @property string|null $image
  * @property-read int|null $stock_alerts_count
  * @property-read int|null $transaction_items_count
  * @method static \Database\Factories\ProductFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereImage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product wherePrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereStockQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereThresholdQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereUpdatedAt($value)
  */
 	final class Product extends \Eloquent {}
 }
@@ -98,6 +123,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Receipt newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Receipt newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Receipt query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Receipt whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Receipt whereIsSynced($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Receipt whereIssuedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Receipt whereQrCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Receipt whereReceiptCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Receipt whereReceiptId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Receipt whereTransactionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Receipt whereUpdatedAt($value)
  */
 	final class Receipt extends \Eloquent {}
 }
@@ -119,6 +152,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StockAlert newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StockAlert newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StockAlert query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockAlert whereAlertId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockAlert whereAlertMessage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockAlert whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockAlert whereCurrentQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockAlert whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockAlert whereThreshold($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockAlert whereTriggeredAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockAlert whereUpdatedAt($value)
  */
 	final class StockAlert extends \Eloquent {}
 }
@@ -137,12 +178,21 @@ namespace App\Models{
  * @property CarbonImmutable|null $created_at
  * @property CarbonImmutable|null $updated_at
  * @property-read User $user User involved in the suspicious activity
- * @property-read Model|MorphTo $entity Morphable entity (e.g., User, Transaction)
+ * @property-read Model|User|Transaction|Pickup $entity Morphable entity (e.g., User, Transaction)
  * @method static \Database\Factories\SuspiciousActivityFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SuspiciousActivity newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SuspiciousActivity newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SuspiciousActivity query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SuspiciousActivity severity(string $severity)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SuspiciousActivity whereActivityId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SuspiciousActivity whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SuspiciousActivity whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SuspiciousActivity whereDetectedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SuspiciousActivity whereEntityId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SuspiciousActivity whereEntityType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SuspiciousActivity whereSeverity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SuspiciousActivity whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SuspiciousActivity whereUserId($value)
  */
 	final class SuspiciousActivity extends \Eloquent {}
 }
@@ -157,11 +207,11 @@ namespace App\Models{
  * @property float $total_amount Total payment amount
  * @property string $payment_status Payment state (pending, completed, failed)
  * @property string $payment_method Method, e.g., cash, card
- * @property \Illuminate\Support\Carbon $transaction_date When the transaction occurred
+ * @property CarbonImmutable $transaction_date When the transaction occurred
  * @property bool $is_synced Sync status for offline mode
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read User $user Staff who processed the transaction
+ * @property CarbonImmutable|null $created_at
+ * @property CarbonImmutable|null $updated_at
+ * @property-read User $staff Staff who processed the transaction
  * @property-read User|null $customer Customer who ordered (if registered)
  * @property-read Receipt|null $receipt Receipt associated with this transaction
  * @property-read \Illuminate\Database\Eloquent\Collection<int, TransactionItem> $items Items in this transaction
@@ -170,6 +220,16 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Transaction newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Transaction newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Transaction query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Transaction whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Transaction whereCustomerUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Transaction whereIsSynced($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Transaction wherePaymentMethod($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Transaction wherePaymentStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Transaction whereTotalAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Transaction whereTransactionDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Transaction whereTransactionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Transaction whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Transaction whereUserId($value)
  */
 	final class Transaction extends \Eloquent {}
 }
@@ -181,10 +241,21 @@ namespace App\Models{
  * @property int $transaction_item_id
  * @property int $transaction_id
  * @property-read Transaction $transaction
+ * @property int $product_id
+ * @property int $quantity
+ * @property string $unit_price
+ * @property string $subtotal
+ * @property-read \App\Models\Product $product
  * @method static \Database\Factories\TransactionItemFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TransactionItem newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TransactionItem newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TransactionItem query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransactionItem whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransactionItem whereQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransactionItem whereSubtotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransactionItem whereTransactionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransactionItem whereTransactionItemId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransactionItem whereUnitPrice($value)
  */
 	final class TransactionItem extends \Eloquent {}
 }
@@ -210,7 +281,6 @@ namespace App\Models{
  * @property-read Collection<int, SuspiciousActivity> $suspiciousActivitiesAsUser Suspicious activities where this user was involved
  * @property-read Collection<int, SuspiciousActivity> $suspiciousActivities Suspicious activities where this user is the entity
  * @property-read Collection<int, AuditLog> $auditLogs Audit logs where this user is the entity
- * @property int $id
  * @property \Carbon\CarbonImmutable|null $email_verified_at
  * @property string|null $remember_token
  * @property-read int|null $audit_logs_count
@@ -227,11 +297,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereEmail($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereEmailVerifiedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereLanguage($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePhone($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRememberToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRole($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUserId($value)
  */
 	final class User extends \Eloquent {}
 }

@@ -17,7 +17,7 @@ return new class() extends Migration
             $table->id('receipt_id')
                 ->comment('Unique identifier for each receipt');
             $table->foreignId('transaction_id')
-                ->constrained('transactions')
+                ->constrained('transactions', 'transaction_id')
                 ->unique()
                 ->comment('Linked transaction');
             $table->string('receipt_code', 20)
