@@ -76,9 +76,29 @@ Route::middleware(['auth'])->group(function () {
             ->name('customers.pickups.show');
     });
     Route::prefix('/staff')->group(function () {
-    Route::get('/orders/verify', App\Livewire\Staff\Orders\Verify::class)
-        ->name('staff.orders.verify');
-});
+        // Order Management
+        Route::get('/orders/verify', App\Livewire\Staff\Orders\Verify::class)
+            ->name('staff.orders.verify');
+
+        // Transaction Management
+        Route::get('/transactions', App\Livewire\Staff\Transactions\Index::class)
+            ->name('staff.transactions.index');
+        Route::get('/transactions/process-payment', App\Livewire\Staff\Transactions\ProcessPayment::class)
+            ->name('staff.transactions.process-payment');
+
+        // Pickup Management
+        Route::get('/pickups', App\Livewire\Staff\Pickups\Index::class)
+            ->name('staff.pickups.index');
+
+        // Stock Alerts
+        Route::get('/stock-alerts', App\Livewire\Staff\StockAlerts\Index::class)
+            ->name('staff.stock-alerts.index');
+
+        // QR Scanner
+        Route::get('/qr-scanner/{mode?}', App\Livewire\Staff\QrScanner::class)
+            ->name('staff.qr-scanner')
+            ->where('mode', 'payment|pickup');
+    });
 });
 
 require __DIR__ . '/auth.php';

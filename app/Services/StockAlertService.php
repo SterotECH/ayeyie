@@ -16,10 +16,10 @@ use Illuminate\Support\Facades\Auth;
 /**
  * Service for managing stock alerts and inventory monitoring
  */
-final class StockAlertService
+final readonly class StockAlertService
 {
     public function __construct(
-        private readonly AuditLogService $auditLogService
+        private AuditLogService $auditLogService
     ) {}
 
     /**
@@ -32,7 +32,7 @@ final class StockAlertService
         ?User $user = null
     ): StockAlert {
         $user = $user ?? Auth::user();
-        
+
         // Check if alert already exists for this product (unresolved)
         $existingAlert = StockAlert::where('product_id', $product->product_id)
             ->get()
@@ -123,7 +123,7 @@ final class StockAlertService
     public function resolveAlertsForProduct(Product $product, ?User $user = null): int
     {
         $user = $user ?? Auth::user();
-        
+
         $unresolvedAlerts = StockAlert::where('product_id', $product->product_id)
             ->get()
             ->filter(fn($alert) => !$alert->is_resolved);
@@ -195,17 +195,17 @@ final class StockAlertService
     public function getAlertStatistics(): array
     {
         $allAlerts = StockAlert::all();
-        
+
         $unresolved = $allAlerts->filter(fn($alert) => !$alert->is_resolved);
         $critical = $unresolved->filter(fn($alert) => $alert->alert_level === 'critical')->count();
         $outOfStock = $unresolved->filter(fn($alert) => $alert->alert_level === 'out_of_stock')->count();
-        
+
         $resolvedToday = $allAlerts->filter(function ($alert) {
-            return $alert->is_resolved && 
-                   $alert->resolved_at && 
+            return $alert->is_resolved &&
+                   $alert->resolved_at &&
                    $alert->resolved_at->isToday();
         })->count();
-        
+
         $affectedProducts = $unresolved->pluck('product_id')->unique()->count();
 
         return [
@@ -227,7 +227,7 @@ final class StockAlertService
     ): ?StockAlert {
         $user = $user ?? Auth::user();
         $oldThreshold = $product->threshold_quantity;
-        
+
         $product->update(['threshold_quantity' => $newThreshold]);
 
         // Log threshold update
@@ -253,15 +253,15 @@ final class StockAlertService
     private function generateAlertMessage(Product $product, StockAlertLevel $alertLevel): string
     {
         $shortage = max(0, $product->threshold_quantity - $product->stock_quantity);
-        
+
         return match ($alertLevel) {
-            StockAlertLevel::OUT_OF_STOCK => 
+            StockAlertLevel::OUT_OF_STOCK =>
                 "Product '{$product->name}' is completely out of stock. Immediate restocking required.",
-            StockAlertLevel::CRITICAL => 
+            StockAlertLevel::CRITICAL =>
                 "CRITICAL: Product '{$product->name}' has only {$product->stock_quantity} units left (threshold: {$product->threshold_quantity}). Need {$shortage} more units.",
-            StockAlertLevel::MEDIUM => 
+            StockAlertLevel::MEDIUM =>
                 "MEDIUM ALERT: Product '{$product->name}' is running low with {$product->stock_quantity} units (threshold: {$product->threshold_quantity}). Consider restocking soon.",
-            StockAlertLevel::LOW => 
+            StockAlertLevel::LOW =>
                 "LOW ALERT: Product '{$product->name}' is approaching low stock with {$product->stock_quantity} units (threshold: {$product->threshold_quantity})."
         };
     }
@@ -301,7 +301,7 @@ final class StockAlertService
 
             // Check for alerts
             $alert = $this->checkProductStock($product, $user);
-            
+
             if ($alert && !$alert->wasRecentlyCreated) {
                 // Existing alert updated
                 continue;

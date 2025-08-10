@@ -8,6 +8,7 @@ use App\Enums\AuditAction;
 use App\Models\User;
 use App\Services\AuditLogService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -16,10 +17,7 @@ use Livewire\WithPagination;
 final class Index extends Component
 {
     use WithPagination;
-    
-    public function __construct(
-        private readonly AuditLogService $auditLogService
-    ) {}
+
 
     #[Url(history: true)]
     public string $search = '';
@@ -95,10 +93,10 @@ final class Index extends Component
     {
         if ($this->userIdBeingDeleted) {
             $user = User::find($this->userIdBeingDeleted);
-            
+
             if ($user) {
                 $actor = Auth::user();
-                
+
                 // Log the user deletion event before deletion
                 $this->auditLogService->logUserManagement(
                     AuditAction::USER_DELETED,
@@ -111,14 +109,14 @@ final class Index extends Component
                         'deleted_user_id' => $user->user_id,
                     ]
                 );
-                
+
                 $user->delete();
             }
         }
-        
+
         $this->confirmingUserDeletion = false;
         $this->userIdBeingDeleted = null;
-        
+
         $this->dispatch('notify', [
             'type' => 'success',
             'message' => 'User deleted successfully!'
@@ -149,7 +147,7 @@ final class Index extends Component
     /**
      * Build the user query with filtering and searching
      */
-    protected function queryUsers()
+    protected function queryUsers(): LengthAwarePaginator
     {
         $query = User::query();
 

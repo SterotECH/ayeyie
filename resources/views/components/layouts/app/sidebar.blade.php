@@ -8,10 +8,10 @@
     <body class="min-h-screen bg-background text-text-primary">
         <!-- Mobile Overlay -->
         <div id="mobile-overlay" class="hidden fixed inset-0 bg-black/50 z-30 lg:hidden"></div>
-        
+
         <div class="flex h-screen">
             <!-- Custom Sidebar -->
-            <aside id="sidebar" class="w-64 lg:w-14 bg-card border-r border-border flex flex-col relative z-40 
+            <aside id="sidebar" class="w-64 lg:w-14 bg-card border-r border-border flex flex-col relative z-40
                                    transition-all duration-300 ease-in-out
                                    fixed lg:static inset-y-0 left-0 -translate-x-full lg:translate-x-0 group">
 
@@ -32,7 +32,7 @@
                 <nav class="flex-1 p-3 space-y-4">
                     <!-- Platform Section -->
                     <div>
-                        <h3 class="sidebar-text text-xs font-medium text-text-secondary uppercase tracking-wide mb-2 px-2">
+                        <h3 class="sidebar-text text-[8px] font-medium text-text-secondary uppercase tracking-wide mb-2 px-2">
                             Platform
                         </h3>
                         <ul class="space-y-0.5">
@@ -50,8 +50,8 @@
 
                     <!-- App Section -->
                     <div>
-                        <h3 class="sidebar-text text-xs font-medium text-text-secondary uppercase tracking-wide mb-2 px-2">
-                            Application
+                        <h3 class="sidebar-text text-[8px] font-medium text-text-secondary uppercase tracking-wide mb-2 px-2">
+                            App
                         </h3>
                         <ul class="space-y-0.5">
                             @if (Auth::user()->role === 'customer')
@@ -75,27 +75,39 @@
                                 </li>
                             @elseif(Auth::user()->role === 'staff')
                                 <li>
-                                    <a href="#"
-                                       class="flex items-center p-2 rounded-md transition-all duration-200 relative text-sm text-text-secondary hover:bg-muted hover:text-text-primary group {{ request()->is('staff/transactions') ? 'bg-primary/10 text-primary font-medium' : '' }}">
+                                    <a href="{{ route('staff.transactions.process-payment') }}"
+                                       class="flex items-center p-2 rounded-md transition-all duration-200 relative text-sm text-text-secondary hover:bg-muted hover:text-text-primary group {{ request()->routeIs('staff.transactions.*') ? 'bg-primary/10 text-primary font-medium' : '' }}"
+                                       wire:navigate>
                                         <flux:icon name="currency-dollar" class="w-5 h-5 flex-shrink-0" />
                                         <span class="ml-2 sidebar-text">Process Payment</span>
                                         <div class="absolute left-full ml-1.5 bg-card border border-border rounded-md px-2 py-1 text-xs whitespace-nowrap opacity-0 pointer-events-none transition-opacity z-50 shadow-md sidebar-tooltip">Process Payment</div>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#"
-                                       class="flex items-center p-2 rounded-md transition-all duration-200 relative text-sm text-text-secondary hover:bg-muted hover:text-text-primary group {{ request()->is('staff/pickups') ? 'bg-primary/10 text-primary font-medium' : '' }}">
+                                    <a href="{{ route('staff.orders.verify') }}"
+                                       class="flex items-center p-2 rounded-md transition-all duration-200 relative text-sm text-text-secondary hover:bg-muted hover:text-text-primary group {{ request()->routeIs('staff.orders.*') ? 'bg-primary/10 text-primary font-medium' : '' }}"
+                                       wire:navigate>
                                         <flux:icon name="truck" class="w-5 h-5 flex-shrink-0" />
                                         <span class="ml-2 sidebar-text">Verify Pickup</span>
                                         <div class="absolute left-full ml-1.5 bg-card border border-border rounded-md px-2 py-1 text-xs whitespace-nowrap opacity-0 pointer-events-none transition-opacity z-50 shadow-md sidebar-tooltip">Verify Pickup</div>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#"
-                                       class="flex items-center p-2 rounded-md transition-all duration-200 relative text-sm text-text-secondary hover:bg-muted hover:text-text-primary group {{ request()->is('staff/stock') ? 'bg-primary/10 text-primary font-medium' : '' }}">
+                                    <a href="{{ route('staff.stock-alerts.index') }}"
+                                       class="flex items-center p-2 rounded-md transition-all duration-200 relative text-sm text-text-secondary hover:bg-muted hover:text-text-primary group {{ request()->routeIs('staff.stock-alerts.*') ? 'bg-primary/10 text-primary font-medium' : '' }}"
+                                       wire:navigate>
                                         <flux:icon name="archive-box" class="w-5 h-5 flex-shrink-0" />
-                                        <span class="ml-2 sidebar-text">Stock Status</span>
-                                        <div class="absolute left-full ml-1.5 bg-card border border-border rounded-md px-2 py-1 text-xs whitespace-nowrap opacity-0 pointer-events-none transition-opacity z-50 shadow-md sidebar-tooltip">Stock Status</div>
+                                        <span class="ml-2 sidebar-text">Stock Alerts</span>
+                                        <div class="absolute left-full ml-1.5 bg-card border border-border rounded-md px-2 py-1 text-xs whitespace-nowrap opacity-0 pointer-events-none transition-opacity z-50 shadow-md sidebar-tooltip">Stock Alerts</div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('staff.pickups.index') }}"
+                                       class="flex items-center p-2 rounded-md transition-all duration-200 relative text-sm text-text-secondary hover:bg-muted hover:text-text-primary group {{ request()->routeIs('staff.pickups.*') ? 'bg-primary/10 text-primary font-medium' : '' }}"
+                                       wire:navigate>
+                                        <flux:icon name="clipboard-document-list" class="w-5 h-5 flex-shrink-0" />
+                                        <span class="ml-2 sidebar-text">Manage Pickups</span>
+                                        <div class="absolute left-full ml-1.5 bg-card border border-border rounded-md px-2 py-1 text-xs whitespace-nowrap opacity-0 pointer-events-none transition-opacity z-50 shadow-md sidebar-tooltip">Manage Pickups</div>
                                     </a>
                                 </li>
                             @elseif(Auth::user()->role === 'admin')
@@ -205,7 +217,7 @@
                     </div>
                     <div class="w-9"></div> <!-- Spacer for centering -->
                 </div>
-                
+
                 <div class="p-4 lg:p-0">
                     {{ $slot }}
                 </div>
@@ -231,7 +243,7 @@
                 let isMobile = window.innerWidth < 1024;
                 let isCollapsed = localStorage.getItem('sidebarCollapsed') !== 'false';
                 let isMobileOpen = false;
-                
+
                 // Apply initial state
                 if (isMobile) {
                     // Mobile: hide sidebar initially, show all text when open
@@ -310,9 +322,9 @@
                 function setupProfileMenu() {
                     const btn = document.getElementById('profile-btn');
                     const menu = document.getElementById('profile-menu');
-                    
+
                     if (!btn || !menu) return;
-                    
+
                     btn.onclick = function(e) {
                         e.preventDefault();
                         e.stopPropagation();
@@ -330,7 +342,7 @@
                         }
                     };
                 }
-                
+
                 setupProfileMenu();
 
                 function collapseSidebar() {
@@ -379,11 +391,11 @@
             .sidebar-collapsed .sidebar-text {
                 display: none;
             }
-            
+
             .sidebar-expanded .sidebar-text {
                 display: block;
             }
-            
+
             /* Mobile always shows text */
             @media (max-width: 1023px) {
                 .sidebar-text {
@@ -393,12 +405,12 @@
                     display: none !important;
                 }
             }
-            
+
             /* Tooltip behavior - only show on hover when collapsed */
             .sidebar-collapsed .group:hover .sidebar-tooltip {
                 opacity: 1;
             }
-            
+
             .sidebar-expanded .sidebar-tooltip {
                 display: none;
             }

@@ -8,16 +8,13 @@ use App\Models\Product;
 use App\Models\StockAlert;
 use App\Models\Transaction;
 use App\Services\StockAlertService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class Dashboard extends Component
 {
-    public function __construct(
-        private readonly StockAlertService $stockAlertService
-    ) {}
-
-    public function render()
+    public function render(): View
     {
         // Only show staff dashboard for staff users
         if (Auth::user()?->role !== 'staff') {
@@ -27,7 +24,7 @@ class Dashboard extends Component
         // Staff-specific stats (limited scope)
         $stats = $this->getStaffStats();
         $recentActivity = $this->getRecentActivity();
-        $urgentAlerts = $this->stockAlertService->getCriticalAlerts()->take(3);
+        $urgentAlerts = app(StockAlertService::class)->getCriticalAlerts()->take(3);
         $todaysOverview = $this->getTodaysOverview();
 
         return view('livewire.staff.dashboard', [
@@ -40,8 +37,8 @@ class Dashboard extends Component
 
     private function getStaffStats(): array
     {
-        $stockStats = $this->stockAlertService->getAlertStatistics();
-        
+        $stockStats = app(StockAlertService::class)->getAlertStatistics();
+
         return [
             'total_products' => Product::count(),
             'low_stock_products' => Product::whereRaw('stock_quantity <= threshold_quantity')->count(),
@@ -57,7 +54,7 @@ class Dashboard extends Component
         // Show only operational activities, not administrative ones
         return AuditLog::with('user')
             ->whereIn('action', [
-                'product_updated', 'transaction_processed', 'pickup_updated', 
+                'product_updated', 'transaction_processed', 'pickup_updated',
                 'stock_updated', 'order_fulfilled'
             ])
             ->orderBy('logged_at', 'desc')
@@ -68,7 +65,7 @@ class Dashboard extends Component
     private function getTodaysOverview(): array
     {
         $today = now()->toDateString();
-        
+
         return [
             'transactions' => Transaction::whereDate('transaction_date', $today)->count(),
             'completed_pickups' => Pickup::whereDate('pickup_date', $today)

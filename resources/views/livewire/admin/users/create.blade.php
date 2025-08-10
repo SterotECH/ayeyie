@@ -95,8 +95,8 @@
                             <flux:field>
                                 <flux:label>User Role</flux:label>
                                 <flux:select wire:model="form.role">
-                                    <flux:select.option value="user">User</flux:select.option>
-                                    <flux:select.option value="manager">Manager</flux:select.option>
+                                    <flux:select.option value="customer">Customer</flux:select.option>
+                                    <flux:select.option value="staff">Staff</flux:select.option>
                                     <flux:select.option value="admin">Administrator</flux:select.option>
                                 </flux:select>
                                 <flux:error name="form.role" />

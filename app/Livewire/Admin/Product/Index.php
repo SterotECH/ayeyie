@@ -17,10 +17,6 @@ use Livewire\WithPagination;
 final class Index extends Component
 {
     use WithPagination;
-    
-    public function __construct(
-        private readonly AuditLogService $auditLogService
-    ) {}
 
     #[Url(history: true)]
     public string $search = '';
@@ -39,7 +35,7 @@ final class Index extends Component
     public string $sortDirection = 'asc';
 
     public int $perPage = 15;
-    
+
     public bool $confirmingProductDeletion = false;
     public ?int $productIdBeingDeleted = null;
 
@@ -83,7 +79,7 @@ final class Index extends Component
         $this->sortBy = 'name';
         $this->sortDirection = 'asc';
     }
-    
+
     /**
      * Confirm product deletion
      */
@@ -92,7 +88,7 @@ final class Index extends Component
         $this->confirmingProductDeletion = true;
         $this->productIdBeingDeleted = $productId;
     }
-    
+
     /**
      * Delete the confirmed product
      */
@@ -100,10 +96,10 @@ final class Index extends Component
     {
         if ($this->productIdBeingDeleted) {
             $product = Product::find($this->productIdBeingDeleted);
-            
+
             if ($product) {
                 $actor = Auth::user();
-                
+
                 // Log the product deletion event before deletion
                 $this->auditLogService->logProductManagement(
                     AuditAction::PRODUCT_DELETED,
@@ -116,14 +112,14 @@ final class Index extends Component
                         'deleted_product_id' => $product->product_id,
                     ]
                 );
-                
+
                 $product->delete();
             }
         }
-        
+
         $this->confirmingProductDeletion = false;
         $this->productIdBeingDeleted = null;
-        
+
         $this->dispatch('notify', [
             'type' => 'success',
             'message' => 'Product deleted successfully!'

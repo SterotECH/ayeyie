@@ -1,10 +1,10 @@
 <div>
     <x-ui.admin-page-layout
-        title="Order Verification"
-        description="Verify and confirm customer orders for pickup"
+        title="Pickup Verification"
+        description="Scan customer QR codes to authenticate and complete order pickups"
         :breadcrumbs="[
             ['label' => 'Dashboard', 'url' => route('dashboard')],
-            ['label' => 'Order Verification']
+            ['label' => 'Pickup Verification']
         ]"
     >
         <div class="max-w-4xl mx-auto space-y-6">
@@ -13,9 +13,22 @@
                 <div class="bg-card rounded-lg border border-border p-6">
                     <h3 class="text-lg font-semibold text-primary mb-4 flex items-center">
                         <flux:icon name="qr-code" class="size-5 text-primary mr-2"/>
-                        Scan QR Code or Enter Details
+                        Authenticate Customer Pickup
                     </h3>
-                    
+
+                    <div class="bg-info/10 border border-info/20 rounded-lg p-4 mb-6">
+                        <div class="flex items-start gap-3">
+                            <flux:icon name="information-circle" class="size-5 text-info flex-shrink-0 mt-0.5" />
+                            <div>
+                                <h4 class="text-sm font-semibold text-info">Pickup Authentication Process</h4>
+                                <p class="text-sm text-text-secondary mt-1">
+                                    Customer should show their QR code receipt to prove they have paid and are authorized to collect their order.
+                                    Scan the QR code or manually enter the details to verify the pickup.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
                     <form wire:submit="verifyOrder">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <flux:field>
@@ -31,9 +44,21 @@
                             </flux:field>
                         </div>
 
-                        <div class="mt-4">
-                            <flux:button type="submit" variant="primary" icon="search">
+                        <div class="mt-4 space-y-3">
+                            <flux:button type="submit" variant="primary" icon="magnifying-glass" class="w-full">
                                 Verify Order
+                            </flux:button>
+                            <div class="text-center">
+                                <span class="text-text-secondary text-sm">or</span>
+                            </div>
+                            <flux:button 
+                                href="{{ route('staff.qr-scanner', ['mode' => 'pickup']) }}" 
+                                variant="outline" 
+                                icon="qr-code"
+                                class="w-full"
+                                wire:navigate
+                            >
+                                Use QR Scanner
                             </flux:button>
                         </div>
                     </form>

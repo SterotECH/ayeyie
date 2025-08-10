@@ -46,7 +46,7 @@ final class Verify extends Component
         $this->receipt = Receipt::where('receipt_code', $this->receiptCode)->first();
         
         if (!$this->receipt || $this->receipt->transaction_id !== $this->transactionId) {
-            session()->flash('error', 'Invalid receipt code or transaction ID.');
+            session()->flash('error', 'Invalid receipt code or transaction ID. Please verify the customer\'s QR code.');
             return;
         }
 
@@ -56,6 +56,20 @@ final class Verify extends Component
         
         if (!$this->transaction) {
             session()->flash('error', 'Transaction not found.');
+            return;
+        }
+
+        // Check if payment has been completed (required for pickup)
+        if ($this->transaction->payment_status !== 'completed') {
+            session()->flash('error', 'Payment not completed. Customer must pay first before pickup can be processed.');
+            session()->flash('info', 'Please direct customer to payment processing or process their payment first.');
+            return;
+        }
+
+        // Check if pickup is already completed
+        $pickup = $this->transaction->receipt->pickup;
+        if ($pickup && $pickup->pickup_status === 'completed') {
+            session()->flash('warning', 'This order has already been picked up.');
             return;
         }
 
