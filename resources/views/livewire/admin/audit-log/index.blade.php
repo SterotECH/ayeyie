@@ -53,7 +53,7 @@
     </x-slot:filterSlot>
 
     <!-- Main Table -->
-    <x-ui.admin-table 
+    <x-ui.admin-table
         :headers="[
             ['label' => 'User', 'field' => 'user_id', 'sortable' => true],
             ['label' => 'Action', 'field' => 'action', 'sortable' => true],
@@ -95,11 +95,9 @@
                     </div>
                 </td>
                 <td class="px-6 py-4">
-                    <div class="text-sm font-medium text-text-primary">{{ $item->action }}</div>
+                    <div class="text-sm font-medium text-text-primary mb-1">{{ $item->action }}</div>
                     @if($item->details)
-                        <div class="text-sm text-text-secondary truncate max-w-xs" title="{{ $item->details }}">
-                            {{ Str::limit($item->details, 50) }}
-                        </div>
+                        <x-audit.details-summary :details="$item->details" :max-length="80" />
                     @endif
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
@@ -137,7 +135,7 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div class="flex items-center justify-end space-x-2">
-                        <flux:button href="{{ route('admin.audit-logs.show', $item->log_id) }}" variant="ghost" size="sm" icon="eye" title="View Log Details" />
+                        <flux:button href="{{ route('admin.audit_logs.show', $item->log_id) }}" variant="ghost" size="sm" icon="eye" title="View Log Details" />
                     </div>
                 </td>
             </tr>
@@ -153,8 +151,8 @@
     </x-ui.admin-table>
 
     <!-- Pagination -->
-    <x-ui.admin-pagination 
-        :items="$logs" 
+    <x-ui.admin-pagination
+        :items="$logs"
         item-name="logs"
         :has-active-filters="$search || array_filter($filters)"
     />

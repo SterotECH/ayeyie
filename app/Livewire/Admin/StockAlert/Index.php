@@ -16,10 +16,6 @@ class Index extends Component
 {
     use WithPagination;
 
-    public function __construct(
-        private readonly StockAlertService $stockAlertService
-    ) {}
-
     public string $search = '';
     public array $filters = [
         'dateFilter' => '',
@@ -65,7 +61,7 @@ class Index extends Component
     public function resolveAlert(int $alertId): void
     {
         $alert = StockAlert::find($alertId);
-        
+
         if ($alert && !$alert->is_resolved) {
             $alert->markAsResolved(Auth::id());
 
@@ -81,8 +77,8 @@ class Index extends Component
      */
     public function checkAllProductsStock(): void
     {
-        $alerts = $this->stockAlertService->checkAllProductsStock(Auth::user());
-        
+        $alerts = app(StockAlertService::class)->checkAllProductsStock(Auth::user());
+
         $this->dispatch('notify', [
             'type' => 'info',
             'message' => "Stock check completed. {$alerts->count()} alerts generated."
@@ -102,7 +98,7 @@ class Index extends Component
 
     private function getStats(): array
     {
-        return $this->stockAlertService->getAlertStatistics();
+        return app(StockAlertService::class)->getAlertStatistics();
     }
 
     /**
@@ -114,18 +110,18 @@ class Index extends Component
     {
         $query = $this->queryAlerts();
         $alerts = $query->get();
-        
+
         // Apply filters that need to be done in memory
         if ($this->filters['resolvedFilter'] !== '') {
             $isResolved = (bool) $this->filters['resolvedFilter'];
             $alerts = $alerts->filter(fn($alert) => $alert->is_resolved === $isResolved);
         }
-        
+
         // Manual pagination
         $total = $alerts->count();
         $alerts = $alerts->slice(($this->getPage() - 1) * $this->perPage, $this->perPage)->values();
-        
-        return new \Illuminate\Pagination\LengthAwarePaginator(
+
+        return new LengthAwarePaginator(
             $alerts,
             $total,
             $this->perPage,

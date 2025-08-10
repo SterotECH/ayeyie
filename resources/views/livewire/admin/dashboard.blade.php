@@ -122,40 +122,40 @@
         <div class="bg-card rounded-lg border border-border p-6">
             <h3 class="text-lg font-semibold text-primary mb-4">Quick Actions</h3>
             <div class="space-y-3">
-                <flux:button 
-                    href="{{ route('admin.users.create') }}" 
-                    variant="outline" 
-                    size="sm" 
+                <flux:button
+                    href="{{ route('admin.users.create') }}"
+                    variant="outline"
+                    size="sm"
                     class="w-full justify-start"
                     wire:navigate
                 >
                     <flux:icon name="user-plus" class="size-4 mr-2" />
                     Add New User
                 </flux:button>
-                <flux:button 
-                    href="{{ route('admin.products.create') }}" 
-                    variant="outline" 
-                    size="sm" 
+                <flux:button
+                    href="{{ route('admin.products.create') }}"
+                    variant="outline"
+                    size="sm"
                     class="w-full justify-start"
                     wire:navigate
                 >
                     <flux:icon name="plus" class="size-4 mr-2" />
                     Add New Product
                 </flux:button>
-                <flux:button 
-                    href="{{ route('admin.stock-alerts.index') }}" 
-                    variant="outline" 
-                    size="sm" 
+                <flux:button
+                    href="{{ route('admin.stock_alerts.index') }}"
+                    variant="outline"
+                    size="sm"
                     class="w-full justify-start"
                     wire:navigate
                 >
                     <flux:icon name="exclamation-triangle" class="size-4 mr-2" />
                     Manage Stock Alerts
                 </flux:button>
-                <flux:button 
-                    href="{{ route('admin.audit-logs.index') }}" 
-                    variant="outline" 
-                    size="sm" 
+                <flux:button
+                    href="{{ route('admin.audit_logs.index') }}"
+                    variant="outline"
+                    size="sm"
                     class="w-full justify-start"
                     wire:navigate
                 >
@@ -171,9 +171,9 @@
         <div class="bg-card rounded-lg border border-border p-6">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-primary">Critical Stock Alerts</h3>
-                <flux:button 
-                    href="{{ route('admin.stock-alerts.index') }}" 
-                    variant="outline" 
+                <flux:button
+                    href="{{ route('admin.stock_alerts.index') }}"
+                    variant="outline"
                     size="sm"
                     wire:navigate
                 >
@@ -212,9 +212,9 @@
         <div class="bg-card rounded-lg border border-border p-6">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-primary">Recent Security Alerts</h3>
-                <flux:button 
-                    href="{{ route('admin.suspicious-activities.index') }}" 
-                    variant="outline" 
+                <flux:button
+                    href="{{ route('admin.suspicious-activities.index') }}"
+                    variant="outline"
                     size="sm"
                     wire:navigate
                 >
@@ -249,16 +249,16 @@
     <div class="bg-card rounded-lg border border-border p-6">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold text-primary">Recent Audit Logs</h3>
-            <flux:button 
-                href="{{ route('admin.audit-logs.index') }}" 
-                variant="outline" 
+            <flux:button
+                href="{{ route('admin.audit_logs.index') }}"
+                variant="outline"
                 size="sm"
                 wire:navigate
             >
                 View All
             </flux:button>
         </div>
-        
+
         @if ($recentAuditLogs->isEmpty())
             <p class="text-secondary">No recent activity logged.</p>
         @else

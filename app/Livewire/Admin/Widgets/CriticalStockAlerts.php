@@ -10,9 +10,6 @@ use Livewire\Component;
 
 final class CriticalStockAlerts extends Component
 {
-    public function __construct(
-        private readonly StockAlertService $stockAlertService
-    ) {}
 
     public int $displayLimit = 5;
     public bool $autoRefresh = true;
@@ -39,10 +36,10 @@ final class CriticalStockAlerts extends Component
 
     public function render(): View
     {
-        $criticalAlerts = $this->stockAlertService->getCriticalAlerts()
+        $criticalAlerts = app(StockAlertService::class)->getCriticalAlerts()
             ->take($this->displayLimit);
 
-        $stats = $this->stockAlertService->getAlertStatistics();
+        $stats = app(StockAlertService::class)->getAlertStatistics();
 
         return view('livewire.admin.widgets.critical-stock-alerts', [
             'criticalAlerts' => $criticalAlerts,

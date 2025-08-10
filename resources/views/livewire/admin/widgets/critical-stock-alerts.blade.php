@@ -53,9 +53,9 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
-                        <flux:button 
-                            wire:click="acknowledgeAlert({{ $alert->alert_id }})" 
-                            variant="ghost" 
+                        <flux:button
+                            wire:click="acknowledgeAlert({{ $alert->alert_id }})"
+                            variant="ghost"
                             size="sm"
                             title="Acknowledge alert"
                         >
@@ -69,10 +69,10 @@
         {{-- View All Link --}}
         @if($hasMore)
             <div class="mt-4 text-center">
-                <flux:button 
+                <flux:button
                     wire:navigate
-                    href="{{ route('admin.stock-alerts.index') }}"
-                    variant="outline" 
+                    href="{{ route('admin.stock_alerts.index') }}"
+                    variant="outline"
                     size="sm"
                 >
                     View All {{ $totalUnresolved }} Alerts

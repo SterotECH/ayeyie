@@ -81,4 +81,17 @@ final class AuditLog extends Model
             'logged_at' => 'datetime',
         ];
     }
+    
+    /**
+     * Get the log level from details JSON
+     */
+    public function getLogLevelAttribute(): ?string
+    {
+        if (is_array($this->details) && isset($this->details['log_level'])) {
+            return $this->details['log_level'];
+        }
+        
+        // Fallback to info level if not specified
+        return 'info';
+    }
 }

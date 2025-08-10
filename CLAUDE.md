@@ -394,3 +394,6 @@ When working on admin pages:
 4. **Customization**: Use slots for page-specific content that doesn't fit the standard pattern
 
 See `resources/views/components/ui/admin-page-layout-example.blade.php` for a complete refactoring example.
+
+- when running command do not cd we are already at the root of the project
+- i cannot add or chnage a migration

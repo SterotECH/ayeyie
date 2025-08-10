@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\SuspiciousActivity;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Services\StockAlertService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -26,7 +27,7 @@ final class Dashboard extends Component
         // Comprehensive admin stats
         $stats = $this->getAdminStats();
         $recentAuditLogs = $this->getRecentAuditLogs();
-        $criticalAlerts = $this->stockAlertService->getCriticalAlerts()->take(5);
+        $criticalAlerts = app(StockAlertService::class)->getCriticalAlerts()->take(5);
         $recentSuspiciousActivity = $this->getRecentSuspiciousActivity();
         $systemOverview = $this->getSystemOverview();
 
@@ -41,7 +42,7 @@ final class Dashboard extends Component
 
     private function getAdminStats(): array
     {
-        $stockStats = $this->stockAlertService->getAlertStatistics();
+        $stockStats = app(StockAlertService::class)->getAlertStatistics();
 
         return [
             'total_users' => User::count(),

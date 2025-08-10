@@ -100,7 +100,7 @@
             {{-- Order Items --}}
             <div class="bg-card rounded-lg border border-border p-6">
                 <h3 class="text-lg font-semibold text-primary mb-6">Order Items</h3>
-                
+
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm">
                         <thead class="text-secondary border-b border-border">
@@ -112,7 +112,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($pickup->receipt->transaction->transactionItems as $item)
+                            @foreach($pickup->receipt->transaction->items as $item)
                                 <tr class="border-b border-border hover:bg-muted/30 transition-colors">
                                     <td class="py-3 px-4">
                                         <div class="flex items-center">
@@ -160,7 +160,7 @@
                     </div>
                     <div class="flex justify-between">
                         <span class="text-sm text-secondary">Total Items</span>
-                        <span class="text-sm text-primary">{{ $pickup->receipt->transaction->transactionItems->count() }}</span>
+                        <span class="text-sm text-primary">{{ $pickup->receipt->transaction->items->count() }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-sm text-secondary">Payment Method</span>
@@ -168,7 +168,7 @@
                     </div>
                     <div class="flex justify-between">
                         <span class="text-sm text-secondary">Payment Status</span>
-                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
                             {{ $pickup->receipt->transaction->payment_status === 'completed' ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning' }}">
                             {{ ucfirst($pickup->receipt->transaction->payment_status) }}
                         </span>
@@ -214,7 +214,7 @@
                         <span class="text-sm text-primary">123 Poultry Road<br>Accra, Ghana</span>
                     </div>
                 </div>
-                
+
                 @if($pickup->pickup_status === 'pending')
                     <div class="mt-4">
                         <flux:button wire:click="contactStore" variant="primary" size="sm" class="w-full">

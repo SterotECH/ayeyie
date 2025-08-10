@@ -33,6 +33,16 @@ final class AuditLogService
         $detailsArray = is_array($details) ? $details : ($details ? ['message' => $details] : []);
         $detailsArray['log_level'] = $logLevel->value;
         $detailsArray['timestamp'] = CarbonImmutable::now()->toISOString();
+        
+        // Add request context information if available
+        if (app()->runningInConsole() === false && request()) {
+            $detailsArray['request_context'] = [
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'url' => request()->fullUrl(),
+                'method' => request()->method(),
+            ];
+        }
 
         return AuditLog::create([
             'user_id' => $user?->user_id,

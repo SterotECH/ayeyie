@@ -35,24 +35,28 @@ class Dashboard extends Component
     private function getCustomerStats(int $customerId): array
     {
         return [
-            'total_orders' => Transaction::where('customer_id', $customerId)->count(),
-            'pending_orders' => Transaction::where('customer_id', $customerId)
-                ->where('transaction_status', 'pending')->count(),
-            'completed_orders' => Transaction::where('customer_id', $customerId)
-                ->where('transaction_status', 'completed')->count(),
-            'total_spent' => Transaction::where('customer_id', $customerId)
-                ->where('payment_status', 'completed')->sum('total_amount'),
-            'pending_pickups' => Pickup::where('customer_id', $customerId)
-                ->where('pickup_status', 'pending')->count(),
-            'completed_pickups' => Pickup::where('customer_id', $customerId)
-                ->where('pickup_status', 'completed')->count(),
+            'total_orders' => Transaction::where('customer_user_id', $customerId)->count(),
+            'pending_orders' => Transaction::where('customer_user_id', $customerId)
+                ->where('payment_status', 'pending')->count(),
+            'completed_orders' => Transaction::where('customer_user_id', $customerId)
+                ->where('payment_status', 'completed')->count(),
+            'total_spent' => (float) Transaction::where('customer_user_id', $customerId)
+                ->where('payment_status', 'completed')->sum('total_amount') ?: 0,
+            'pending_amount' => (float) Transaction::where('customer_user_id', $customerId)
+                ->where('payment_status', 'pending')->sum('total_amount') ?: 0,
+            'pending_pickups' => Pickup::whereHas('receipt.transaction', function($query) use ($customerId) {
+                $query->where('customer_user_id', $customerId);
+            })->where('pickup_status', 'pending')->count(),
+            'completed_pickups' => Pickup::whereHas('receipt.transaction', function($query) use ($customerId) {
+                $query->where('customer_user_id', $customerId);
+            })->where('pickup_status', 'completed')->count(),
         ];
     }
 
     private function getRecentOrders(int $customerId): \Illuminate\Database\Eloquent\Collection
     {
-        return Transaction::with(['transactionItems.product'])
-            ->where('customer_id', $customerId)
+        return Transaction::with(['items.product'])
+            ->where('customer_user_id', $customerId)
             ->orderBy('transaction_date', 'desc')
             ->limit(5)
             ->get();
@@ -60,8 +64,10 @@ class Dashboard extends Component
 
     private function getUpcomingPickups(int $customerId): \Illuminate\Database\Eloquent\Collection
     {
-        return Pickup::with(['transaction.transactionItems.product'])
-            ->where('customer_id', $customerId)
+        return Pickup::with(['receipt.transaction.items.product'])
+            ->whereHas('receipt.transaction', function($query) use ($customerId) {
+                $query->where('customer_user_id', $customerId);
+            })
             ->where('pickup_status', 'pending')
             ->orderBy('pickup_date', 'asc')
             ->limit(3)
@@ -73,18 +79,18 @@ class Dashboard extends Component
         $thisMonth = now()->format('Y-m');
         $lastMonth = now()->subMonth()->format('Y-m');
         
-        $thisMonthSpent = Transaction::where('customer_id', $customerId)
+        $thisMonthSpent = (float) Transaction::where('customer_user_id', $customerId)
             ->where('transaction_date', 'like', "{$thisMonth}%")
             ->where('payment_status', 'completed')
-            ->sum('total_amount');
+            ->sum('total_amount') ?: 0;
             
-        $lastMonthSpent = Transaction::where('customer_id', $customerId)
+        $lastMonthSpent = (float) Transaction::where('customer_user_id', $customerId)
             ->where('transaction_date', 'like', "{$lastMonth}%")
             ->where('payment_status', 'completed')
-            ->sum('total_amount');
+            ->sum('total_amount') ?: 0;
         
         return [
-            'this_month_orders' => Transaction::where('customer_id', $customerId)
+            'this_month_orders' => Transaction::where('customer_user_id', $customerId)
                 ->where('transaction_date', 'like', "{$thisMonth}%")->count(),
             'this_month_spent' => $thisMonthSpent,
             'last_month_spent' => $lastMonthSpent,

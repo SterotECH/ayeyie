@@ -69,49 +69,126 @@ new class extends Component {
     }
 }; ?>
 
-<section class="w-full">
-    @include('partials.settings-heading')
-
-    <x-settings.layout heading="Profile" subheading="Update your name and email address">
-        <form wire:submit="updateProfileInformation" class="my-6 w-full space-y-6">
-            <flux:input wire:model="name" label="{{ __('Name') }}" type="text" name="name" required autofocus autocomplete="name" />
-
-            <div>
-                <flux:input wire:model="email" label="{{ __('Email') }}" type="email" name="email" required autocomplete="email" />
-
-                @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail &&! auth()->user()->hasVerifiedEmail())
-                    <div>
-                        <p class="mt-2 text-sm text-gray-800">
-                            {{ __('Your email address is unverified.') }}
-
-                            <button
-                                wire:click.prevent="resendVerificationNotification"
-                                class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                            >
-                                {{ __('Click here to re-send the verification email.') }}
-                            </button>
-                        </p>
-
-                        @if (session('status') === 'verification-link-sent')
-                            <p class="mt-2 text-sm font-medium text-green-600">
-                                {{ __('A new verification link has been sent to your email address.') }}
-                            </p>
-                        @endif
-                    </div>
-                @endif
+<div>
+<x-settings.layout heading="Profile Information" subheading="Update your account's profile information and email address">
+    <div class="space-y-8">
+        <!-- Profile Form -->
+        <form wire:submit="updateProfileInformation" class="space-y-6">
+            <!-- Profile Avatar Section -->
+            <div class="flex items-center gap-4">
+                <div class="size-16 rounded-full bg-primary/10 flex items-center justify-center">
+                    <span class="text-xl font-bold text-primary">
+                        {{ auth()->user()->initials() }}
+                    </span>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-text-primary">Profile Photo</h3>
+                    <p class="text-xs text-text-secondary">This is your avatar displayed across the application</p>
+                </div>
             </div>
 
-            <div class="flex items-center gap-4">
-                <div class="flex items-center justify-end">
-                    <flux:button variant="primary" type="submit" class="w-full">{{ __('Save') }}</flux:button>
+            <!-- Form Fields -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <flux:field>
+                        <flux:label class="text-sm font-medium text-text-primary">Full Name</flux:label>
+                        <flux:input
+                            wire:model="name"
+                            type="text"
+                            name="name"
+                            required
+                            autofocus
+                            autocomplete="name"
+                            class="bg-background border-border focus:border-primary focus:ring-primary/20"
+                        />
+                        <flux:error name="name" />
+                    </flux:field>
                 </div>
 
-                <x-action-message class="me-3" on="profile-updated">
-                    {{ __('Saved.') }}
+                <div class="space-y-2">
+                    <flux:field>
+                        <flux:label class="text-sm font-medium text-text-primary">Email Address</flux:label>
+                        <flux:input
+                            wire:model="email"
+                            type="email"
+                            name="email"
+                            required
+                            autocomplete="email"
+                            class="bg-background border-border focus:border-primary focus:ring-primary/20"
+                        />
+                        <flux:error name="email" />
+                    </flux:field>
+                </div>
+            </div>
+
+            <!-- Email Verification Notice -->
+            @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail &&! auth()->user()->hasVerifiedEmail())
+                <div class="bg-warning/10 border border-warning/20 rounded-lg p-4">
+                    <div class="flex items-start gap-3">
+                        <flux:icon name="exclamation-triangle" class="size-5 text-warning flex-shrink-0 mt-0.5" />
+                        <div class="flex-1">
+                            <h4 class="text-sm font-medium text-warning">Email Verification Required</h4>
+                            <p class="text-sm text-text-secondary mt-1">
+                                Your email address is unverified. Please verify your email to access all features.
+                            </p>
+                            <button
+                                wire:click.prevent="resendVerificationNotification"
+                                class="mt-2 text-sm text-warning hover:text-warning-hover underline focus:outline-none focus:ring-2 focus:ring-warning/20 rounded"
+                            >
+                                Resend verification email
+                            </button>
+                        </div>
+                    </div>
+
+                    @if (session('status') === 'verification-link-sent')
+                        <div class="mt-3 p-3 bg-success/10 border border-success/20 rounded-lg">
+                            <div class="flex items-center gap-2">
+                                <flux:icon name="check-circle" class="size-4 text-success" />
+                                <p class="text-sm text-success">A new verification link has been sent to your email address.</p>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            @endif
+
+            <!-- Save Button -->
+            <div class="flex items-center justify-between pt-4">
+                <x-action-message on="profile-updated" class="text-sm text-success">
+                    <div class="flex items-center gap-2">
+                        <flux:icon name="check-circle" class="size-4" />
+                        Profile updated successfully
+                    </div>
                 </x-action-message>
+
+                <flux:button
+                    variant="primary"
+                    type="submit"
+                    class="bg-primary hover:bg-primary-hover text-white px-6 py-2"
+                >
+                    Save Changes
+                </flux:button>
             </div>
         </form>
 
-        <livewire:settings.delete-user-form />
-    </x-settings.layout>
-</section>
+        <!-- Danger Zone -->
+        <div class="border-t border-border pt-8">
+            <div class="bg-error/5 border border-error/20 rounded-lg p-6">
+                <div class="flex items-start gap-4">
+                    <div class="size-10 rounded-lg bg-error/10 flex items-center justify-center flex-shrink-0">
+                        <flux:icon name="exclamation-triangle" class="size-5 text-error" />
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-semibold text-text-primary">Danger Zone</h3>
+                        <p class="text-sm text-text-secondary mt-1">
+                            Irreversible and destructive actions
+                        </p>
+                        <div class="mt-4">
+                            <livewire:settings.delete-user-form />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</x-settings.layout>
+</div>

@@ -9,10 +9,10 @@
                     <p class="text-3xl font-bold text-primary">{{ number_format($stats['total_orders']) }}</p>
                 </div>
                 <div class="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <flux:icon name="shopping-bag" class="h-6 w-6 text-primary" />
+                    <flux:icon name="shopping-bag" class="size-6 text-primary" />
                 </div>
             </div>
-            <div class="mt-4 text-xs text-muted">
+            <div class="mt-4 text-xs text-text-primary">
                 {{ $stats['completed_orders'] }} Completed • {{ $stats['pending_orders'] }} Pending
             </div>
         </div>
@@ -25,11 +25,15 @@
                     <p class="text-3xl font-bold text-success">₵{{ number_format($stats['total_spent'], 2) }}</p>
                 </div>
                 <div class="h-12 w-12 rounded-lg bg-success/10 flex items-center justify-center">
-                    <flux:icon name="currency-dollar" class="h-6 w-6 text-success" />
+                    <flux:icon name="currency-dollar" class="size-6 text-success" />
                 </div>
             </div>
-            <div class="mt-4 text-xs text-muted">
-                Lifetime purchases
+            <div class="mt-4 text-xs text-text-primary">
+                @if($stats['pending_amount'] > 0)
+                    ₵{{ number_format($stats['pending_amount'], 2) }} Pending Payment
+                @else
+                    Lifetime purchases
+                @endif
             </div>
         </div>
 
@@ -41,10 +45,10 @@
                     <p class="text-3xl font-bold text-warning">{{ number_format($stats['pending_pickups']) }}</p>
                 </div>
                 <div class="h-12 w-12 rounded-lg bg-warning/10 flex items-center justify-center">
-                    <flux:icon name="truck" class="h-6 w-6 text-warning" />
+                    <flux:icon name="truck" class="size-6 text-warning" />
                 </div>
             </div>
-            <div class="mt-4 text-xs text-muted">
+            <div class="mt-4 text-xs text-text-primary">
                 {{ $stats['completed_pickups'] }} Already Collected
             </div>
         </div>
@@ -57,10 +61,10 @@
                     <p class="text-3xl font-bold text-primary">{{ number_format($orderSummary['this_month_orders']) }}</p>
                 </div>
                 <div class="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <flux:icon name="chart-bar" class="h-6 w-6 text-primary" />
+                    <flux:icon name="chart-bar" class="size-6 text-primary" />
                 </div>
             </div>
-            <div class="mt-4 text-xs text-muted">
+            <div class="mt-4 text-xs text-text-primary">
                 ₵{{ number_format($orderSummary['this_month_spent'], 2) }} Spent
             </div>
         </div>
@@ -85,9 +89,9 @@
 
                 @if ($recentOrders->isEmpty())
                     <div class="text-center py-8">
-                        <flux:icon name="shopping-bag" class="size-12 text-muted mx-auto mb-2" />
+                        <flux:icon name="shopping-bag" class="size-12 text-text-primary mx-auto mb-2" />
                         <p class="text-secondary">No orders yet</p>
-                        <p class="text-sm text-muted">Your recent orders will appear here</p>
+                        <p class="text-sm text-text-primary">Your recent orders will appear here</p>
                     </div>
                 @else
                     <div class="space-y-4">
@@ -97,15 +101,15 @@
                                     <div class="flex items-center gap-2 mb-1">
                                         <span class="font-medium text-primary">Order #{{ $order->transaction_id }}</span>
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
-                                            {{ $order->transaction_status === 'completed' ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning' }}">
-                                            {{ ucfirst($order->transaction_status) }}
+                                            {{ $order->payment_status === 'completed' ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning' }}">
+                                            {{ ucfirst($order->payment_status) }}
                                         </span>
                                     </div>
                                     <div class="text-sm text-secondary">
-                                        {{ $order->transactionItems->count() }} item(s) •
+                                        {{ $order->items->count() }} item(s) •
                                         ₵{{ number_format($order->total_amount, 2) }}
                                     </div>
-                                    <div class="text-xs text-muted">
+                                    <div class="text-xs text-text-primary">
                                         {{ $order->transaction_date ? \Carbon\CarbonImmutable::parse($order->transaction_date)->format('M j, Y') : 'N/A' }}
                                     </div>
                                 </div>
@@ -134,7 +138,7 @@
 
                 @if ($upcomingPickups->isEmpty())
                     <div class="text-center py-6">
-                        <flux:icon name="truck" class="size-8 text-muted mx-auto mb-2" />
+                        <flux:icon name="truck" class="size-8 text-text-primary mx-auto mb-2" />
                         <p class="text-sm text-secondary">No pending pickups</p>
                     </div>
                 @else
@@ -142,13 +146,13 @@
                         @foreach ($upcomingPickups as $pickup)
                             <div class="p-3 bg-warning/5 rounded-lg border-l-4 border-warning">
                                 <div class="font-medium text-primary mb-1">
-                                    Order #{{ $pickup->transaction->transaction_id }}
+                                    Order #{{ $pickup->receipt->transaction->transaction_id }}
                                 </div>
                                 <div class="text-sm text-secondary">
                                     Pickup Date: {{ $pickup->pickup_date ? \Carbon\CarbonImmutable::parse($pickup->pickup_date)->format('M j, Y') : 'TBD' }}
                                 </div>
-                                <div class="text-xs text-muted">
-                                    {{ $pickup->transaction->transactionItems->count() }} item(s)
+                                <div class="text-xs text-text-primary">
+                                    {{ $pickup->receipt->transaction->items->count() }} item(s)
                                 </div>
                             </div>
                         @endforeach
@@ -225,7 +229,7 @@
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-sm text-secondary">Last Month</span>
-                        <span class="font-medium text-muted">₵{{ number_format($orderSummary['last_month_spent'], 2) }}</span>
+                        <span class="font-medium text-text-primary">₵{{ number_format($orderSummary['last_month_spent'], 2) }}</span>
                     </div>
                     @if($orderSummary['spending_trend'] != 0)
                         <div class="flex justify-between items-center">

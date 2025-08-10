@@ -19,7 +19,7 @@ class Show extends Component
 
         // Load relationships
         $pickup->load([
-            'receipt.transaction.transactionItems.product',
+            'receipt.transaction.items.product',
             'receipt.transaction.customer',
             'user'
         ]);
@@ -41,9 +41,9 @@ class Show extends Component
     private function getPickupStats(): array
     {
         $transaction = $this->pickup->receipt->transaction;
-        
+
         return [
-            'total_items' => $transaction->transactionItems->count(),
+            'total_items' => $transaction->items->count(),
             'total_value' => $transaction->total_amount,
             'order_date' => $transaction->transaction_date,
             'payment_status' => $transaction->payment_status,
