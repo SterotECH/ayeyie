@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\ProductFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Product model representing the products table.
@@ -17,14 +21,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property float $price Current price per unit
  * @property int $stock_quantity Current stock level
  * @property int $threshold_quantity Minimum stock level for alerts
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, StockAlert> $stockAlerts Stock alerts for this product
- * @property-read \Illuminate\Database\Eloquent\Collection<int, TransactionItem> $transactionItems Transaction items involving this product
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, StockAlert> $stockAlerts Stock alerts for this product
+ * @property-read Collection<int, TransactionItem> $transactionItems Transaction items involving this product
  */
 final class Product extends Model
 {
-    /** @use HasFactory<\Database\Factories\ProductFactory> */
+    /** @use HasFactory<ProductFactory> */
     use HasFactory;
 
     /**
@@ -47,6 +51,7 @@ final class Product extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'category_id',
         'name',
         'description',
         'price',

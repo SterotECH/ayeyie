@@ -2,10 +2,13 @@
 
 namespace App\Livewire\Admin\StockAlert;
 
+use App\Enums\StockAlertLevel;
 use App\Models\StockAlert;
+use App\Services\StockAlertService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -13,52 +16,93 @@ class Index extends Component
 {
     use WithPagination;
 
+    public function __construct(
+        private readonly StockAlertService $stockAlertService
+    ) {}
+
     public string $search = '';
+    public array $filters = [
+        'dateFilter' => '',
+        'thresholdFilter' => '',
+        'resolvedFilter' => ''
+    ];
+    public string $sortBy = 'triggered_at';
+    public string $sortDirection = 'desc';
+    public int $perPage = 15;
 
-    /** @var string|null Filter by date range (today, week, month) */
-    public ?string $dateFilter = null;
+    public bool $showBulkActions = false;
+    public array $selectedAlerts = [];
 
-    /** @var string|null Filter by threshold level (critical, warning) */
-    public ?string $thresholdFilter = null;
-
-    public int $perPage = 10;
-
-    /** @var array<string, string> Stored query string parameters */
     protected $queryString = [
         'search' => ['except' => ''],
-        'dateFilter' => ['except' => null],
-        'thresholdFilter' => ['except' => null],
-        'perPage' => ['except' => 10],
+        'filters' => ['except' => []],
+        'perPage' => ['except' => 15],
     ];
 
-    /**
-     * Reset pagination when filters change
-     *
-     * @return void
-     */
-    public function updatedSearch(): void
+    public function updatingSearch(): void
     {
         $this->resetPage();
     }
 
-    /**
-     * Reset pagination when date filter changes
-     *
-     * @return void
-     */
-    public function updatedDateFilter(): void
+    public function updatingFilters(): void
     {
         $this->resetPage();
     }
 
-    /**
-     * Reset pagination when threshold filter changes
-     *
-     * @return void
-     */
-    public function updatedThresholdFilter(): void
+    public function sortBy(string $field): void
     {
-        $this->resetPage();
+        if ($this->sortBy === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortBy = $field;
+            $this->sortDirection = 'asc';
+        }
+    }
+
+    /**
+     * Resolve a single stock alert
+     */
+    public function resolveAlert(int $alertId): void
+    {
+        $alert = StockAlert::find($alertId);
+        
+        if ($alert && !$alert->is_resolved) {
+            $alert->markAsResolved(Auth::id());
+
+            $this->dispatch('notify', [
+                'type' => 'success',
+                'message' => 'Stock alert resolved successfully!'
+            ]);
+        }
+    }
+
+    /**
+     * Check all products for stock alerts
+     */
+    public function checkAllProductsStock(): void
+    {
+        $alerts = $this->stockAlertService->checkAllProductsStock(Auth::user());
+        
+        $this->dispatch('notify', [
+            'type' => 'info',
+            'message' => "Stock check completed. {$alerts->count()} alerts generated."
+        ]);
+    }
+
+    /**
+     * Toggle bulk actions display
+     */
+    public function toggleBulkActions(): void
+    {
+        $this->showBulkActions = !$this->showBulkActions;
+        if (!$this->showBulkActions) {
+            $this->selectedAlerts = [];
+        }
+    }
+
+    private function getStats(): array
+    {
+        return $this->stockAlertService->getAlertStatistics();
     }
 
     /**
@@ -68,7 +112,26 @@ class Index extends Component
      */
     public function getAlertsProperty(): LengthAwarePaginator
     {
-        return $this->queryAlerts()->paginate($this->perPage);
+        $query = $this->queryAlerts();
+        $alerts = $query->get();
+        
+        // Apply filters that need to be done in memory
+        if ($this->filters['resolvedFilter'] !== '') {
+            $isResolved = (bool) $this->filters['resolvedFilter'];
+            $alerts = $alerts->filter(fn($alert) => $alert->is_resolved === $isResolved);
+        }
+        
+        // Manual pagination
+        $total = $alerts->count();
+        $alerts = $alerts->slice(($this->getPage() - 1) * $this->perPage, $this->perPage)->values();
+        
+        return new \Illuminate\Pagination\LengthAwarePaginator(
+            $alerts,
+            $total,
+            $this->perPage,
+            $this->getPage(),
+            ['path' => request()->url()]
+        );
     }
 
     /**
@@ -79,18 +142,18 @@ class Index extends Component
     private function queryAlerts(): Builder
     {
         $query = StockAlert::query()
-            ->join('products', 'stock_alerts.product_id', '=', 'products.product_id')
-            ->select('stock_alerts.*', 'products.name as product_name');
+            ->with(['product', 'resolvedBy']);
 
         if ($this->search) {
             $query->where(function (Builder $query) {
-                $query->whereLike('products.name', '%' . $this->search . '%')
-                    ->orWhereLike('stock_alerts.alert_message', '%' . $this->search . '%');
+                $query->whereHas('product', function ($q) {
+                    $q->where('name', 'like', '%' . $this->search . '%');
+                })->orWhere('alert_message', 'like', '%' . $this->search . '%');
             });
         }
 
-        if ($this->dateFilter) {
-            switch ($this->dateFilter) {
+        if ($this->filters['dateFilter']) {
+            switch ($this->filters['dateFilter']) {
                 case 'today':
                     $query->whereDate('triggered_at', now()->toDateString());
                     break;
@@ -103,29 +166,22 @@ class Index extends Component
             }
         }
 
-        if ($this->thresholdFilter) {
-            switch ($this->thresholdFilter) {
-                case 'critical':
-                    $query->whereRaw('current_quantity <= threshold * 0.5');
-                    break;
-                case 'warning':
-                    $query->whereRaw('current_quantity > threshold * 0.5 AND current_quantity <= threshold');
-                    break;
-            }
-        }
+        // Note: Alert level filtering will be done in memory since it's computed from JSON
 
-        return $query->orderBy('triggered_at', 'desc');
+        // Note: Resolution status filtering is done in memory since it's stored in JSON
+
+        // Basic ordering (complex sorting done in memory)
+        $query->orderBy($this->sortBy, $this->sortDirection);
+
+        return $query;
     }
 
-    /**
-     * Render the component
-     *
-     * @return View
-     */
     public function render(): View
     {
         return view('livewire.admin.stock-alert.index', [
             'alerts' => $this->alerts,
+            'stats' => $this->getStats(),
+            'alertLevels' => StockAlertLevel::cases(),
         ]);
     }
 }

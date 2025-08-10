@@ -5,8 +5,8 @@
         @include('partials.head')
     </head>
 
-    <body class="min-h-screen bg-zinc-50 dark:bg-zinc-800 dark:bg-zinc-800">
-        <flux:sidebar class="border-r border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900" sticky stashable>
+    <body class="min-h-screen bg-background text-text-primary">
+        <flux:sidebar class="border-r border-card bg-card" sticky stashable collapsible>
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
             <a class="mr-5 flex items-center space-x-2" href="{{ route('dashboard') }}" wire:navigate>
@@ -25,7 +25,7 @@
                 <flux:navlist.group class="grid space-y-2" heading="App">
                     @if (Auth::user()->role === 'customer')
                         <flux:navlist.item href="{{ route('customers.orders.index') }}" icon="shopping-cart"
-                            :current="request()-> routeIs('customers.orders*')">
+                            :current="request()-> routeIs('customers.orders*')" class="text-accent-content">
                             My Orders
                         </flux:navlist.item>
                         <flux:navlist.item href="{{ route('customers.pickups.index')}}" icon="truck" :current="request()->routeIs('customers.pickups*')">

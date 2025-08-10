@@ -4,6 +4,7 @@ namespace App\Livewire\Customer\Orders;
 
 use App\Models\Transaction;
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -11,29 +12,47 @@ class Index extends Component
 {
     use WithPagination;
 
-    public $search = '';
-    public $dateFilter = '';
-    public $statusFilter = '';
+    public string $search = '';
+    public array $filters = [
+        'dateFilter' => '',
+        'statusFilter' => ''
+    ];
+    public string $sortBy = 'transaction_date';
+    public string $sortDirection = 'desc';
+    public int $perPage = 15;
 
     protected $queryString = [
         'search' => ['except' => ''],
-        'dateFilter' => ['except' => ''],
-        'statusFilter' => ['except' => ''],
+        'filters' => ['except' => []],
+        'perPage' => ['except' => 15],
     ];
 
-    public function updatingSearch()
+    public function mount()
+    {
+        // Only show customer orders for customer users
+        if (Auth::user()?->role !== 'customer') {
+            abort(403, 'Access denied');
+        }
+    }
+
+    public function updatingSearch(): void
     {
         $this->resetPage();
     }
 
-    public function updatedDateFilter()
+    public function updatingFilters(): void
     {
         $this->resetPage();
     }
 
-    public function updatedStatusFilter()
+    public function sortBy(string $field): void
     {
-        $this->resetPage();
+        if ($this->sortBy === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortBy = $field;
+            $this->sortDirection = 'asc';
+        }
     }
 
     public function getTransactionsProperty()
@@ -44,24 +63,30 @@ class Index extends Component
     private function fetchTransactions()
     {
         $query = Transaction::query()
-            // ->with('customer')
-            ->orderBy('transaction_date', 'desc');
+            ->where('customer_user_id', Auth::id())
+            ->with(['items.product', 'staff', 'receipt'])
+            ->orderBy($this->sortBy, $this->sortDirection);
 
         // Apply search filter
         if (!empty($this->search)) {
-            $query->whereLike('transaction_id', '%' . $this->search . '%');
+            $query->where(function ($q) {
+                $q->where('transaction_id', 'like', '%' . $this->search . '%')
+                  ->orWhereHas('items.product', function ($subQ) {
+                      $subQ->where('name', 'like', '%' . $this->search . '%');
+                  });
+            });
         }
 
         // Apply status filter
-        if (!empty($this->statusFilter)) {
-            $query->where('payment_status', $this->statusFilter);
+        if (!empty($this->filters['statusFilter'])) {
+            $query->where('payment_status', $this->filters['statusFilter']);
         }
 
         // Apply date filter
-        if (!empty($this->dateFilter)) {
+        if (!empty($this->filters['dateFilter'])) {
             $now = CarbonImmutable::now();
 
-            switch ($this->dateFilter) {
+            switch ($this->filters['dateFilter']) {
                 case 'today':
                     $query->whereDate('transaction_date', $now->toDateString());
                     break;
@@ -90,13 +115,26 @@ class Index extends Component
             }
         }
 
-        return $query->paginate(10);
+        return $query->paginate($this->perPage);
+    }
+
+    private function getStats(): array
+    {
+        $customerId = Auth::id();
+
+        return [
+            'total_orders' => Transaction::where('customer_user_id', $customerId)->count(),
+            'pending_orders' => Transaction::where('customer_user_id', $customerId)->where('payment_status', 'pending')->count(),
+            'completed_orders' => Transaction::where('customer_user_id', $customerId)->where('payment_status', 'completed')->count(),
+            'total_spent' => Transaction::where('customer_user_id', $customerId)->where('payment_status', 'completed')->sum('total_amount'),
+        ];
     }
 
     public function render()
     {
         return view('livewire.customer.orders.index', [
-            'transactions' => $this->transactions
+            'transactions' => $this->transactions,
+            'stats' => $this->getStats(),
         ]);
     }
 }

@@ -20,7 +20,7 @@
     </button>
 
     <div class="data-open:block relative hidden space-y-[2px] pl-7" @if ($expanded === true) data-open @endif>
-        <div class="absolute inset-y-[3px] left-0 ml-4 w-px bg-zinc-200 dark:bg-zinc-50 dark:bg-zinc-800/30"></div>
+        <div class="absolute inset-y-[3px] left-0 ml-4 w-px bg-bg-card"></div>
 
         {{ $slot }}
     </div>

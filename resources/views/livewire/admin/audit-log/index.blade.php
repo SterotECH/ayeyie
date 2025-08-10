@@ -1,204 +1,161 @@
-<div>
-    <div class="mb-6 flex flex-col items-start justify-between md:flex-row md:items-center">
+<x-ui.admin-page-layout
+    title="Audit Logs"
+    description="Monitor and track all system activities and user actions"
+    :breadcrumbs="[['label' => 'Audit Logs']]"
+    :stats="[
+        ['label' => 'Total Logs', 'value' => number_format($stats['total']), 'icon' => 'document-text', 'iconBg' => 'bg-primary/10', 'iconColor' => 'text-primary'],
+        ['label' => 'Today\'s Activity', 'value' => number_format($stats['today']), 'icon' => 'calendar', 'iconBg' => 'bg-success/10', 'iconColor' => 'text-success'],
+        ['label' => 'Critical Events', 'value' => number_format($stats['critical']), 'icon' => 'exclamation-triangle', 'iconBg' => 'bg-error/10', 'iconColor' => 'text-error'],
+        ['label' => 'Error Events', 'value' => number_format($stats['errors']), 'icon' => 'x-circle', 'iconBg' => 'bg-warning/10', 'iconColor' => 'text-warning']
+    ]"
+    :show-filters="true"
+    search-placeholder="Search actions, entities, or details..."
+    :has-active-filters="$search || array_filter($filters)"
+>
+    <x-slot:filterSlot>
+        <!-- Date Filter -->
         <div>
-            <h1 class="text-accent text-2xl font-bold">Audit Logs</h1>
-            <p class="text-accent/50 text-sm">Monitor system activities</p>
-        </div>
-        <div class="mt-4 md:mt-0">
-            <a class="text-sm text-gray-600 hover:text-gray-900" href="{{ route('dashboard') }}">
-                Dashboard
-            </a>
-            <span class="mx-2 text-gray-500">/</span>
-            <span class="text-sm text-gray-900">Audit Logs</span>
-        </div>
-    </div>
-
-    <div class="mb-6 rounded-lg bg-zinc-50 p-4 shadow dark:bg-zinc-800">
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
-            <!-- Search -->
-            <div class="col-span-1 md:col-span-2">
-                <label class="sr-only" for="search">Search</label>
-                <div class="relative">
-                    <flux:input id="search" icon="magnifying-glass" wire:model.debounce.300ms="search"
-                        placeholder="Search audit logs..." />
-                </div>
-            </div>
-
-            <!-- Date Filter -->
-            <div>
-                <label class="sr-only" for="dateFilter">Date Filter</label>
-                <flux:select id="dateFilter" wire:model="dateFilter">
-                    <flux:select.option value="">All Dates</flux:select.option>
+            <flux:field>
+                <flux:label>Date Range</flux:label>
+                <flux:select wire:model.live="filters.dateFilter" placeholder="All Dates">
                     <flux:select.option value="today">Today</flux:select.option>
                     <flux:select.option value="week">This Week</flux:select.option>
                     <flux:select.option value="month">This Month</flux:select.option>
                 </flux:select>
-            </div>
+            </flux:field>
+        </div>
 
-            <!-- Log Level Filter -->
-            <div>
-                <label class="sr-only" for="logLevelFilter">Log Level Filter</label>
-                <flux:select id="logLevelFilter" wire:model="logLevelFilter">
-                    <flux:select.option value="">All Levels</flux:select.option>
+        <!-- Log Level Filter -->
+        <div>
+            <flux:field>
+                <flux:label>Log Level</flux:label>
+                <flux:select wire:model.live="filters.logLevelFilter" placeholder="All Levels">
                     <flux:select.option value="info">Info</flux:select.option>
                     <flux:select.option value="warning">Warning</flux:select.option>
                     <flux:select.option value="error">Error</flux:select.option>
                     <flux:select.option value="critical">Critical</flux:select.option>
                 </flux:select>
-            </div>
+            </flux:field>
         </div>
-    </div>
 
-    <!-- Desktop Table View -->
-    <div class="hidden overflow-hidden rounded-lg bg-zinc-50 shadow md:block dark:bg-zinc-800">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-900">
-            <thead class="bg-gray-50 dark:bg-gray-700">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                        scope="col">
-                        User
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                        scope="col">
-                        Action
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                        scope="col">
-                        Entity
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                        scope="col">
-                        Level
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                        scope="col">
-                        Date
-                    </th>
-                    <th class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500"
-                        scope="col">
-                        Action
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200 bg-zinc-50 dark:divide-gray-900 dark:bg-zinc-800">
-                @forelse($logs as $log)
-                    <tr class="hover:bg-gray-50 dark:bg-gray-700">
-                        <td class="whitespace-nowrap px-6 py-4">
-                            <div class="text-sm font-medium text-gray-900">{{ $log->user->name ?? 'System' }}</div>
-                        </td>
-                        <td class="whitespace-nowrap px-6 py-4">
-                            <div class="text-sm text-gray-900">{{ $log->action }}</div>
-                        </td>
-                        <td class="whitespace-nowrap px-6 py-4">
-                            <div class="text-sm text-gray-900">
-                                {{ class_basename($log->entity_type) }} #{{ $log->entity_id }}
+        <!-- Per Page -->
+        <div class="flex items-end">
+            <flux:field>
+                <flux:label>Per Page</flux:label>
+                <flux:select wire:model.live="perPage">
+                    <flux:select.option value="15">15</flux:select.option>
+                    <flux:select.option value="25">25</flux:select.option>
+                    <flux:select.option value="50">50</flux:select.option>
+                    <flux:select.option value="100">100</flux:select.option>
+                </flux:select>
+            </flux:field>
+        </div>
+    </x-slot:filterSlot>
+
+    <!-- Main Table -->
+    <x-ui.admin-table 
+        :headers="[
+            ['label' => 'User', 'field' => 'user_id', 'sortable' => true],
+            ['label' => 'Action', 'field' => 'action', 'sortable' => true],
+            ['label' => 'Entity', 'field' => 'entity_type', 'sortable' => true],
+            ['label' => 'Log Level', 'field' => 'log_level', 'sortable' => true],
+            ['label' => 'Logged At', 'field' => 'logged_at', 'sortable' => true],
+            ['label' => 'Actions']
+        ]"
+        :items="$logs"
+        empty-title="No Audit Logs Found"
+        empty-description="No audit logs match your current filters"
+        :has-active-filters="$search || array_filter($filters)"
+        :sort-by="$sortBy"
+        :sort-direction="$sortDirection"
+    >
+        @foreach($logs as $item)
+            <tr class="hover:bg-muted transition-colors">
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 h-8 w-8">
+                            <div class="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                @if($item->user)
+                                    <span class="text-xs font-medium text-primary">
+                                        {{ strtoupper(substr($item->user->name, 0, 2)) }}
+                                    </span>
+                                @else
+                                    <flux:icon.cog class="w-4 h-4 text-primary" />
+                                @endif
                             </div>
-                        </td>
-                        <td class="whitespace-nowrap px-6 py-4">
-                            @if ($log->log_level === 'critical')
-                                <span
-                                    class="inline-flex rounded-full bg-red-100 px-2 text-xs font-semibold leading-5 text-red-800">
-                                    Critical
-                                </span>
-                            @elseif ($log->log_level === 'error')
-                                <span
-                                    class="inline-flex rounded-full bg-orange-100 px-2 text-xs font-semibold leading-5 text-orange-800">
-                                    Error
-                                </span>
-                            @elseif ($log->log_level === 'warning')
-                                <span
-                                    class="inline-flex rounded-full bg-yellow-100 px-2 text-xs font-semibold leading-5 text-yellow-800">
-                                    Warning
-                                </span>
-                            @else
-                                <span
-                                    class="inline-flex rounded-full bg-blue-100 px-2 text-xs font-semibold leading-5 text-blue-800">
-                                    Info
-                                </span>
+                        </div>
+                        <div class="ml-3">
+                            <div class="text-sm font-medium text-text-primary">
+                                {{ $item->user->name ?? 'System' }}
+                            </div>
+                            @if($item->user?->email)
+                                <div class="text-sm text-text-secondary">{{ $item->user->email }}</div>
                             @endif
-                        </td>
-                        <td class="whitespace-nowrap px-6 py-4">
-                            <div class="text-sm text-gray-500">{{ $log->logged_at->format('M d, Y H:i') }}</div>
-                        </td>
-                        <td class="whitespace-nowrap px-6 py-4 text-right">
-                            <flux:button href="{{ route('admin.audit-logs.show', $log->log_id) }}" variant="filled">
-                                <flux:icon.eye class="size-4" />
-                            </flux:button>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td class="px-6 py-4 text-center text-sm text-gray-500" colspan="6">
-                            No audit logs found.
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Mobile Card View -->
-    <div class="space-y-4 md:hidden">
-        @forelse($logs as $log)
-            <div class="overflow-hidden rounded-lg bg-zinc-50 shadow dark:bg-zinc-800">
-                <div class="flex justify-between px-4 py-5 sm:px-6">
-                    <div>
-                        <h3 class="text-lg font-medium leading-6 text-gray-900">{{ $log->action }}</h3>
-                        <p class="mt-1 max-w-2xl text-sm text-gray-500">{{ $log->logged_at->format('M d, Y H:i') }}
-                        </p>
+                        </div>
                     </div>
-                    @if ($log->log_level === 'critical')
-                        <span
-                            class="inline-flex h-6 items-center rounded-full bg-red-100 px-2 text-xs font-semibold leading-5 text-red-800">
+                </td>
+                <td class="px-6 py-4">
+                    <div class="text-sm font-medium text-text-primary">{{ $item->action }}</div>
+                    @if($item->details)
+                        <div class="text-sm text-text-secondary truncate max-w-xs" title="{{ $item->details }}">
+                            {{ Str::limit($item->details, 50) }}
+                        </div>
+                    @endif
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-text-primary">
+                        {{ class_basename($item->entity_type) }}
+                    </div>
+                    <div class="text-sm text-text-secondary">ID: {{ $item->entity_id }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    @if($item->log_level === 'critical')
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-error/10 text-error">
+                            <flux:icon.exclamation-triangle class="w-3 h-3 mr-1" />
                             Critical
                         </span>
-                    @elseif ($log->log_level === 'error')
-                        <span
-                            class="inline-flex h-6 items-center rounded-full bg-orange-100 px-2 text-xs font-semibold leading-5 text-orange-800">
+                    @elseif($item->log_level === 'error')
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warning/10 text-warning">
+                            <flux:icon.x-circle class="w-3 h-3 mr-1" />
                             Error
                         </span>
-                    @elseif ($log->log_level === 'warning')
-                        <span
-                            class="inline-flex h-6 items-center rounded-full bg-yellow-100 px-2 text-xs font-semibold leading-5 text-yellow-800">
+                    @elseif($item->log_level === 'warning')
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warning/10 text-warning">
+                            <flux:icon.exclamation-circle class="w-3 h-3 mr-1" />
                             Warning
                         </span>
                     @else
-                        <span
-                            class="inline-flex h-6 items-center rounded-full bg-blue-100 px-2 text-xs font-semibold leading-5 text-blue-800">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">
+                            <flux:icon.information-circle class="w-3 h-3 mr-1" />
                             Info
                         </span>
                     @endif
-                </div>
-                <div class="border-t border-gray-200">
-                    <dl>
-                        <div class="bg-gray-50 px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-gray-700">
-                            <dt class="text-sm font-medium text-gray-500">User</dt>
-                            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                                {{ $log->user->name ?? 'System' }}
-                            </dd>
-                        </div>
-                        <div class="bg-zinc-50 px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-zinc-800">
-                            <dt class="text-sm font-medium text-gray-500">Entity</dt>
-                            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                                {{ class_basename($log->entity_type) }} #{{ $log->entity_id }}
-                            </dd>
-                        </div>
-                    </dl>
-                </div>
-                <div class="bg-gray-50 px-4 py-4 text-right dark:bg-gray-700">
-                    <flux:button href="{{ route('admin.audit-logs.show', $log->log_id) }}" variant="filled">
-                        <flux:icon.eye class="-ml-1 mr-2 size-5" /> View Details
-                    </flux:button>
-                </div>
-            </div>
-        @empty
-            <div class="rounded-lg bg-zinc-50 p-6 text-center text-gray-500 shadow dark:bg-zinc-800">
-                No audit logs found.
-            </div>
-        @endforelse
-    </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
+                    <div>{{ $item->logged_at->format('M j, Y') }}</div>
+                    <div class="text-xs">{{ $item->logged_at->format('g:i A') }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div class="flex items-center justify-end space-x-2">
+                        <flux:button href="{{ route('admin.audit-logs.show', $item->log_id) }}" variant="ghost" size="sm" icon="eye" title="View Log Details" />
+                    </div>
+                </td>
+            </tr>
+        @endforeach
 
-    <div class="mt-4">
-        {{ $logs->links() }}
-    </div>
-</div>
+        {{-- Empty Action Slot --}}
+        <x-slot:emptyAction>
+            <div class="text-center">
+                <p class="text-text-secondary text-sm mb-4">No audit logs recorded yet.</p>
+                <p class="text-text-secondary text-xs">System activities and user actions will be logged here.</p>
+            </div>
+        </x-slot:emptyAction>
+    </x-ui.admin-table>
+
+    <!-- Pagination -->
+    <x-ui.admin-pagination 
+        :items="$logs" 
+        item-name="logs"
+        :has-active-filters="$search || array_filter($filters)"
+    />
+</x-ui.admin-page-layout>

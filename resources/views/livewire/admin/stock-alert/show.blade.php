@@ -1,131 +1,176 @@
-<div>
-    <!-- Header with Title and Breadcrumb -->
-    <div class="mb-6 flex flex-col items-start justify-between md:flex-row md:items-center">
-        <div>
-            <h1 class="text-2xl font-bold text-gray-900">Stock Alert Details</h1>
-            <p class="text-sm text-gray-500">
-                {{ $alert->product_name }} -
-                {{-- {{ optional($alert->triggered_at->format('M d, Y H:i')) }} --}}
-            </p>
-        </div>
+<x-ui.admin-page-layout 
+    title="Stock Alert Details"
+    description="Monitor and manage low stock inventory alerts"
+    :breadcrumbs="[
+        ['label' => 'Stock Alerts', 'url' => route('admin.stock_alerts.index')],
+        ['label' => 'Alert #' . $alert->alert_id]
+    ]"
+    :show-filters="false"
+>
+    <x-slot:actions>
+        <flux:button href="{{ route('admin.stock_alerts.index') }}" variant="ghost" icon="arrow-left">
+            Back to Alerts
+        </flux:button>
+        <flux:button href="#" variant="primary" icon="check">
+            Mark as Reviewed
+        </flux:button>
+        <flux:button href="#" variant="success" icon="shopping-cart">
+            Create Purchase Order
+        </flux:button>
+    </x-slot:actions>
 
-        <nav class="breadcrumbs text-sm">
-            <ul>
-                <li><a class="text-gray-500" href="{{ route('dashboard') }}">Dashboard</a></li>
-                <li><a class="text-gray-500" href="{{ route('admin.stock_alerts.index') }}">Inventory</a></li>
-                <li class="font-medium text-gray-900">Details</li>
-            </ul>
-        </nav>
-    </div>
-
-    <!-- Alert Banner (shown after actions) -->
     @if (session()->has('message'))
-        <div class="mb-6 border-l-4 border-green-400 bg-green-50 p-4">
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                        fill="currentColor">
-                        <path fill-rule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                            clip-rule="evenodd" />
-                    </svg>
-                </div>
-                <div class="ml-3">
-                    <p class="text-sm text-green-700">
-                        {{ session('message') ?? 'Alert marked as reviewed' }}
-                    </p>
-                </div>
+        <div class="mb-6 p-4 rounded-lg bg-success/10 border border-success/20">
+            <div class="flex items-center">
+                <flux:icon.check-circle class="w-5 h-5 text-success mr-2" />
+                <span class="text-success text-sm">{{ session('message') ?? 'Alert marked as reviewed' }}</span>
             </div>
         </div>
     @endif
 
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Alert Details Card -->
-        <div class="lg:col-span-1">
-            <div class="overflow-hidden rounded-lg bg-zinc-50 shadow dark:bg-zinc-800">
-                <div class="border-b border-gray-200 px-4 py-5 sm:px-6">
-                    <h3 class="text-lg font-medium leading-6 text-gray-900">Alert Information</h3>
+        <div class="lg:col-span-2">
+            <div class="bg-card rounded-lg border border-border shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-border">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-text-primary">Alert Information</h3>
+                            <p class="text-sm text-text-secondary mt-1">
+                                Triggered on {{ $alert->triggered_at->format('M j, Y g:i A') }}
+                            </p>
+                        </div>
+                        <div>
+                            @if($alert->current_quantity <= $alert->threshold * 0.5)
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-error/10 text-error">
+                                    <flux:icon.exclamation-triangle class="w-4 h-4 mr-1" />
+                                    Critical Level
+                                </span>
+                            @else
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-warning/10 text-warning">
+                                    <flux:icon.exclamation-circle class="w-4 h-4 mr-1" />
+                                    Warning Level
+                                </span>
+                            @endif
+                        </div>
+                    </div>
                 </div>
-
-                {{-- <div class="px-4 py-5 sm:p-0">
-                    <dl class="sm:divide-y sm:divide-gray-200 dark:divide-gray-900">
-                        <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
-                            <dt class="text-sm font-medium text-gray-500">Product</dt>
-                            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{{ $product->name }}</dd>
-                        </div>
-
-                        <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
-                            <dt class="text-sm font-medium text-gray-500">SKU</dt>
-                            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{{ $product->sku ?? 'N/A' }}
+                
+                <div class="px-6 py-6">
+                    <dl class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        <!-- Product Information -->
+                        <div class="sm:col-span-2">
+                            <dt class="text-sm font-medium text-text-secondary">Product</dt>
+                            <dd class="mt-2">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-12 w-12">
+                                        <div class="h-12 w-12 rounded-lg bg-warning/10 flex items-center justify-center">
+                                            <flux:icon.cube class="w-6 h-6 text-warning" />
+                                        </div>
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-text-primary">{{ $product->name }}</div>
+                                        <div class="text-sm text-text-secondary">Product ID: {{ $product->product_id }}</div>
+                                        @if($product->sku)
+                                            <div class="text-sm text-text-secondary">SKU: {{ $product->sku }}</div>
+                                        @endif
+                                    </div>
+                                </div>
                             </dd>
                         </div>
 
-                        <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
-                            <dt class="text-sm font-medium text-gray-500">Current Quantity</dt>
-                            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{{ $alert->current_quantity }}
+                        <!-- Current Quantity -->
+                        <div class="sm:col-span-1">
+                            <dt class="text-sm font-medium text-text-secondary">Current Quantity</dt>
+                            <dd class="mt-1">
+                                <div class="text-2xl font-bold text-text-primary">{{ number_format($alert->current_quantity) }}</div>
+                                <div class="text-sm text-text-secondary">units available</div>
                             </dd>
                         </div>
 
-                        <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
-                            <dt class="text-sm font-medium text-gray-500">Threshold</dt>
-                            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{{ $alert->threshold }}</dd>
+                        <!-- Threshold -->
+                        <div class="sm:col-span-1">
+                            <dt class="text-sm font-medium text-text-secondary">Alert Threshold</dt>
+                            <dd class="mt-1">
+                                <div class="text-2xl font-bold text-text-primary">{{ number_format($alert->threshold) }}</div>
+                                <div class="text-sm text-text-secondary">minimum required</div>
+                            </dd>
                         </div>
 
-                        <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
-                            <dt class="text-sm font-medium text-gray-500">Status</dt>
-                            <dd class="mt-1 sm:col-span-2 sm:mt-0">
-                                @if ($alert->current_quantity <= $alert->threshold * 0.5)
-                                    <span
-                                        class="inline-flex rounded-full bg-red-100 px-2 text-xs font-semibold leading-5 text-red-800">
-                                        Critical
-                                    </span>
+                        <!-- Alert Message -->
+                        <div class="sm:col-span-2">
+                            <dt class="text-sm font-medium text-text-secondary">Alert Message</dt>
+                            <dd class="mt-1 text-sm text-text-primary">{{ $alert->alert_message ?? 'Stock quantity has fallen below the minimum threshold.' }}</dd>
+                        </div>
+
+                        <!-- Additional Details -->
+                        <div class="sm:col-span-1">
+                            <dt class="text-sm font-medium text-text-secondary">Shortage</dt>
+                            <dd class="mt-1 text-sm text-text-primary">
+                                @php
+                                    $shortage = $alert->threshold - $alert->current_quantity;
+                                @endphp
+                                @if($shortage > 0)
+                                    <span class="text-error font-semibold">{{ number_format($shortage) }} units short</span>
                                 @else
-                                    <span
-                                        class="inline-flex rounded-full bg-yellow-100 px-2 text-xs font-semibold leading-5 text-yellow-800">
-                                        Warning
-                                    </span>
+                                    <span class="text-success">No shortage</span>
                                 @endif
                             </dd>
                         </div>
 
-                        <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
-                            <dt class="text-sm font-medium text-gray-500">Triggered On</dt>
-                            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                                {{ $alert->triggered_at->format('F d, Y \a\t h:i A') }}</dd>
-                        </div>
-
-                        <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
-                            <dt class="text-sm font-medium text-gray-500">Message</dt>
-                            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{{ $alert->alert_message }}
+                        <div class="sm:col-span-1">
+                            <dt class="text-sm font-medium text-text-secondary">Percentage Below Threshold</dt>
+                            <dd class="mt-1 text-sm text-text-primary">
+                                @php
+                                    $percentage = ($alert->current_quantity / $alert->threshold) * 100;
+                                @endphp
+                                <span class="@if($percentage <= 50) text-error @else text-warning @endif font-semibold">
+                                    {{ number_format($percentage, 1) }}%
+                                </span>
                             </dd>
                         </div>
                     </dl>
-                </div> --}}
+                </div>
             </div>
-            {{--
-            <!-- Action Buttons -->
-            <div class="mt-6 flex flex-col sm:flex-row sm:space-x-4">
-                <button
-                    class="inline-flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
-                    wire:click="takeAction('review')" @if ($markAsReviewed) disabled @endif>
-                    <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                    {{ $markAsReviewed ? 'Reviewed' : 'Mark as Reviewed' }}
-                </button>
+        </div>
 
-                <button
-                    class="mt-3 inline-flex w-full items-center justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 sm:mt-0"
-                    wire:click="takeAction('reorder')">
-                    <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    Create Purchase Order
-                </button>
-            </div> --}}
+        <!-- Action Panel -->
+        <div class="lg:col-span-1">
+            <div class="bg-card rounded-lg border border-border shadow-sm">
+                <div class="px-6 py-4 border-b border-border">
+                    <h3 class="text-lg font-semibold text-text-primary">Quick Actions</h3>
+                    <p class="text-sm text-text-secondary mt-1">Resolve this stock alert</p>
+                </div>
+                <div class="px-6 py-6 space-y-4">
+                    <flux:button variant="primary" size="sm" icon="check" class="w-full">
+                        Mark as Reviewed
+                    </flux:button>
+                    <flux:button variant="success" size="sm" icon="shopping-cart" class="w-full">
+                        Create Purchase Order
+                    </flux:button>
+                    <flux:button variant="ghost" size="sm" icon="pencil" class="w-full">
+                        Update Threshold
+                    </flux:button>
+                </div>
+            </div>
+
+            <!-- Related Information -->
+            <div class="mt-6 bg-card rounded-lg border border-border shadow-sm">
+                <div class="px-6 py-4 border-b border-border">
+                    <h3 class="text-lg font-semibold text-text-primary">Related Information</h3>
+                </div>
+                <div class="px-6 py-4">
+                    <div class="text-center py-4">
+                        <flux:icon.information-circle class="w-8 h-8 text-text-secondary mx-auto mb-2" />
+                        <p class="text-text-secondary text-sm">Additional product analytics and history can be displayed here</p>
+                        @if($product)
+                            <flux:button href="{{ route('admin.products.show', $product) }}" variant="ghost" class="mt-3" icon="cube">
+                                View Product Details
+                            </flux:button>
+                        @endif
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+</x-ui.admin-page-layout>

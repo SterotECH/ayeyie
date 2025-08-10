@@ -2,11 +2,17 @@
 
 namespace App\Livewire\Admin\Product;
 
+use App\Enums\AuditAction;
 use App\Models\Product;
+use App\Services\AuditLogService;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class Create extends Component
 {
+    public function __construct(
+        private readonly AuditLogService $auditLogService
+    ) {}
     public $name = '';
     public $description = '';
     public $price = '';
@@ -25,13 +31,26 @@ class Create extends Component
     {
         $validatedData = $this->validate();
 
-        Product::create([
+        $product = Product::create([
             'name' => $this->name,
             'description' => $this->description,
             'price' => $this->price,
             'stock_quantity' => $this->stock_quantity,
             'threshold_quantity' => $this->threshold_quantity,
         ]);
+
+        // Log the product creation event
+        $this->auditLogService->logProductManagement(
+            AuditAction::PRODUCT_CREATED,
+            $product,
+            Auth::user(),
+            [
+                'product_name' => $this->name,
+                'price' => $this->price,
+                'stock_quantity' => $this->stock_quantity,
+                'threshold_quantity' => $this->threshold_quantity,
+            ]
+        );
 
         session()->flash('message', 'Product successfully created.');
         $this->reset();

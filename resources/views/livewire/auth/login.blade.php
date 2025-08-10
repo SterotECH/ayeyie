@@ -1,5 +1,8 @@
 <?php
 
+use App\Enums\AuditAction;
+use App\Services\AuditLogService;
+use App\Services\SuspiciousActivityService;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
@@ -27,17 +30,45 @@ new #[Layout('components.layouts.auth')] class extends Component {
         $this->validate();
 
         $this->ensureIsNotRateLimited();
+        
+        $auditLogService = app(AuditLogService::class);
+        $suspiciousActivityService = app(SuspiciousActivityService::class);
 
         if (!Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
             RateLimiter::hit($this->throttleKey());
+            
+            // Log failed login attempt
+            $auditLogService->logAuth(
+                AuditAction::USER_LOGIN_FAILED,
+                null,
+                [
+                    'attempted_email' => $this->email,
+                    'ip_address' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ]
+            );
+            
+            // Check for suspicious login patterns
+            $suspiciousActivityService->detectFailedLogins(null, $this->email);
 
             throw ValidationException::withMessages([
                 'email' => __('auth.failed'),
             ]);
         }
+        
+        $user = Auth::user();
 
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
+        
+        // Log successful login
+        $auditLogService->logAuth(AuditAction::USER_LOGIN, $user);
+        
+        // Check for suspicious activity patterns
+        if ($user) {
+            $suspiciousActivityService->detectUnusualIpAddress($user);
+            $suspiciousActivityService->detectOffHoursActivity($user, 'login');
+        }
 
         $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
     }

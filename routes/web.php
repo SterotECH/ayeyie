@@ -11,7 +11,9 @@ use App\Models\AuditLog;
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
-Volt::route('/product/{product}', 'welcome.products.show')
+Route::get('/products', App\Livewire\Welcome\Products\All::class)
+    ->name('welcome.products.index');
+Route::get('/product/{product}', App\Livewire\Welcome\Products\Show::class)
     ->name('welcome.products.show');
 
 Route::view('dashboard', 'dashboard')
@@ -73,7 +75,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/pickups/{pickup}', Customer\Pickup\Show::class)
             ->name('customers.pickups.show');
     });
-    Route::prefix('/staff')->group(function () {});
+    Route::prefix('/staff')->group(function () {
+    Route::get('/orders/verify', App\Livewire\Staff\Orders\Verify::class)
+        ->name('staff.orders.verify');
+});
 });
 
 require __DIR__ . '/auth.php';

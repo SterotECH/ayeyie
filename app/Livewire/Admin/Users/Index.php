@@ -1,175 +1,173 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Admin\Users;
 
+use App\Enums\AuditAction;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+use App\Services\AuditLogService;
+use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-class Index extends Component
+final class Index extends Component
 {
     use WithPagination;
+    
+    public function __construct(
+        private readonly AuditLogService $auditLogService
+    ) {}
 
-    public $name;
-    public $email;
-    public $password;
-    public $role = 'user';
-    public $searchTerm = '';
-    public $sortField = 'created_at';
-    public $sortDirection = 'desc';
-    public $confirmingUserDeletion = false;
-    public $userIdBeingDeleted;
-    public $userBeingEdited = null;
-    public $isEditMode = false;
-    public $showFilters = false;
-    public $perPage = 10;
-    public $roles = ['admin', 'manager', 'user'];
-    public $selectedRoleFilter = '';
+    #[Url(history: true)]
+    public string $search = '';
 
-    protected $rules = [
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|max:255|unique:users',
-        'password' => 'required|min:8',
-        'role' => 'required|string',
+    #[Url(history: true)]
+    public array $filters = [
+        'role' => '',
     ];
 
-    public function updatingSearchTerm()
+    #[Url(history: true)]
+    public string $sortBy = 'created_at';
+
+    #[Url(history: true)]
+    public string $sortDirection = 'desc';
+
+    public int $perPage = 15;
+
+    public bool $confirmingUserDeletion = false;
+    public ?int $userIdBeingDeleted = null;
+
+    /**
+     * Reset pagination to first page when search changes
+     */
+    public function updatingSearch(): void
     {
         $this->resetPage();
     }
 
-    public function sortBy($field)
+    /**
+     * Reset pagination when filters are updated
+     */
+    public function updatingFilters(): void
     {
-        if ($this->sortField === $field) {
+        $this->resetPage();
+    }
+
+    /**
+     * Set sorting column and direction
+     */
+    public function sortBy(string $column): void
+    {
+        if ($this->sortBy === $column) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
         } else {
-            $this->sortField = $field;
+            $this->sortBy = $column;
             $this->sortDirection = 'asc';
         }
     }
 
-    public function confirmUserDeletion($userId)
+    /**
+     * Reset all filters to default state
+     */
+    public function resetFilters(): void
+    {
+        $this->reset(['search', 'filters', 'sortBy', 'sortDirection']);
+        $this->sortBy = 'created_at';
+        $this->sortDirection = 'desc';
+    }
+
+    /**
+     * Confirm user deletion
+     */
+    public function confirmUserDeletion(int $userId): void
     {
         $this->confirmingUserDeletion = true;
         $this->userIdBeingDeleted = $userId;
     }
 
-    public function deleteUser()
+    /**
+     * Delete the confirmed user
+     */
+    public function deleteUser(): void
     {
-        User::find($this->userIdBeingDeleted)->delete();
+        if ($this->userIdBeingDeleted) {
+            $user = User::find($this->userIdBeingDeleted);
+            
+            if ($user) {
+                $actor = Auth::user();
+                
+                // Log the user deletion event before deletion
+                $this->auditLogService->logUserManagement(
+                    AuditAction::USER_DELETED,
+                    $user,
+                    $actor,
+                    [
+                        'deleted_user_name' => $user->name,
+                        'deleted_user_email' => $user->email,
+                        'deleted_user_role' => $user->role,
+                        'deleted_user_id' => $user->user_id,
+                    ]
+                );
+                
+                $user->delete();
+            }
+        }
+        
         $this->confirmingUserDeletion = false;
+        $this->userIdBeingDeleted = null;
+        
         $this->dispatch('notify', [
             'type' => 'success',
             'message' => 'User deleted successfully!'
         ]);
     }
 
-    public function editUser($userId)
+    public function render(): View
     {
-        $this->userBeingEdited = User::find($userId);
-        $this->name = $this->userBeingEdited->name;
-        $this->email = $this->userBeingEdited->email;
-        $this->role = $this->userBeingEdited->role;
-        $this->password = '';
-        $this->isEditMode = true;
-    }
+        $users = $this->queryUsers();
 
-    public function cancelEdit()
-    {
-        $this->resetInputFields();
-        $this->isEditMode = false;
-    }
-
-    public function updateUser()
-    {
-        $this->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $this->userBeingEdited->id,
-            'role' => 'required|string',
-        ]);
-
-        $data = [
-            'name' => $this->name,
-            'email' => $this->email,
-            'role' => $this->role,
-        ];
-
-        if (!empty($this->password)) {
-            $this->validate(['password' => 'min:8']);
-            $data['password'] = Hash::make($this->password);
-        }
-
-        $this->userBeingEdited->update($data);
-        $this->isEditMode = false;
-        $this->resetInputFields();
-        $this->dispatch('notify', [
-            'type' => 'success',
-            'message' => 'User updated successfully!'
-        ]);
-    }
-
-    public function createUser()
-    {
-        $this->validate();
-
-        User::create([
-            'name' => $this->name,
-            'email' => $this->email,
-            'password' => Hash::make($this->password),
-            'role' => $this->role,
-        ]);
-
-        $this->resetInputFields();
-        $this->dispatchBrowserEvent('notify', [
-            'type' => 'success',
-            'message' => 'User created successfully!'
-        ]);
-    }
-
-    public function resetInputFields()
-    {
-        $this->name = '';
-        $this->email = '';
-        $this->password = '';
-        $this->role = 'user';
-        $this->userBeingEdited = null;
-    }
-
-    public function toggleFilters()
-    {
-        $this->showFilters = !$this->showFilters;
-    }
-
-    public function resetFilters()
-    {
-        $this->searchTerm = '';
-        $this->selectedRoleFilter = '';
-        $this->resetPage();
-    }
-
-    public function updatedPerPage()
-    {
-        $this->resetPage();
-    }
-
-    public function render()
-    {
-        $users = User::query()
-            ->when($this->searchTerm, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('name', 'like', '%' . $this->searchTerm . '%')
-                        ->orWhere('email', 'like', '%' . $this->searchTerm . '%');
-                });
-            })
-            ->when($this->selectedRoleFilter, function ($query) {
-                $query->where('role', $this->selectedRoleFilter);
-            })
-            ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate($this->perPage);
+        // Get statistics for dashboard cards
+        $totalUsers = User::count();
+        $adminUsers = User::where('role', 'admin')->count();
+        $managerUsers = User::where('role', 'manager')->count();
+        $regularUsers = User::where('role', 'user')->count();
 
         return view('livewire.admin.users.index', [
             'users' => $users,
+            'stats' => [
+                'total' => $totalUsers,
+                'admin' => $adminUsers,
+                'manager' => $managerUsers,
+                'user' => $regularUsers,
+            ],
         ]);
+    }
+
+    /**
+     * Build the user query with filtering and searching
+     */
+    protected function queryUsers()
+    {
+        $query = User::query();
+
+        // Search functionality
+        if (!empty($this->search)) {
+            $query->where(function ($q) {
+                $q->where('name', 'like', "%{$this->search}%")
+                    ->orWhere('email', 'like', "%{$this->search}%");
+            });
+        }
+
+        // Role filter
+        if (!empty($this->filters['role'])) {
+            $query->where('role', $this->filters['role']);
+        }
+
+        $query->orderBy($this->sortBy, $this->sortDirection);
+
+        return $query->paginate($this->perPage);
     }
 }

@@ -1,89 +1,87 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Customer\Orders;
 
 use App\Models\Transaction;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
-class Show extends Component
+final class Show extends Component
 {
     public Transaction $transaction;
-    public $transactionItems;
-    public $receipt;
-    public $pickup;
-    public $customer;
-    public $staff;
-    public $canBePickedUp = false;
-    public $showQrCode = false;
 
-    protected $listeners = ['refreshOrder' => '$refresh'];
-
-    public function mount(Transaction $transaction)
+    public function mount(Transaction $transaction): void
     {
+        // Ensure customer can only view their own orders
+        if (Auth::user()?->role !== 'customer') {
+            abort(403, 'Access denied');
+        }
+
+        // Load relationships
+        $transaction->load([
+            'items.product',
+            'receipt.pickup',
+            'customer',
+            'staff',
+        ]);
+
+        // Verify this order belongs to the authenticated customer
+        if ($transaction->customer_user_id !== Auth::id()) {
+            abort(403, 'This order does not belong to you');
+        }
+
         $this->transaction = $transaction;
     }
 
-    public function loadTransaction(Transaction $transaction)
+    public function contactStore(): void
     {
-        $this->transaction = $transaction->load([
-            'items.product',
-            'receipt',
-            'receipt.pickup',
-            'customer',
-            'staff'
-        ]);
-
-        $this->transactionItems = $this->transaction->items;
-        $this->receipt = $this->transaction->receipt;
-        $this->pickup = $this->receipt->pickup ?? null;
-        $this->customer = $this->transaction->customer;
-        $this->staff = $this->transaction->staff;
-
-        // Check if the order can be picked up (has a receipt and payment is completed)
-        $this->canBePickedUp = $this->receipt &&
-            $this->transaction->payment_status === 'completed' &&
-            (!$this->pickup || $this->pickup->pickup_status === 'pending');
+        // This would typically integrate with a messaging system or redirect to contact
+        session()->flash('message', 'Contact information will be provided via email or SMS.');
     }
-
-    public function toggleQrCode()
+    
+    
+    public function requestDelivery(): void
     {
-        $this->showQrCode = !$this->showQrCode;
-    }
-
-    public function markAsPickedUp()
-    {
-        if (!$this->canBePickedUp) {
+        if ($this->transaction->payment_method !== 'cash' || $this->transaction->payment_status !== 'pending') {
+            session()->flash('error', 'Invalid action for this order.');
             return;
         }
-
-        if (!$this->pickup) {
-            // Create a new pickup record
-            $this->receipt->pickup()->create([
-                'user_id' => Auth::id(),
-                'pickup_status' => 'completed',
-                'pickup_date' => now(),
-                'is_synced' => false
-            ]);
-        } else {
-            // Update existing pickup record
-            $this->pickup->update([
-                'user_id' => Auth::id(),
-                'pickup_status' => 'completed',
-                'pickup_date' => now(),
-                'is_synced' => false
-            ]);
-        }
-
-        $this->loadTransaction($this->transaction);
-        $this->emit('orderPickedUp', $this->transaction->transaction_id);
-        session()->flash('message', 'Order has been marked as picked up.');
+        
+        // Log delivery request
+        app(\App\Services\AuditLogService::class)->log(
+            action: \App\Enums\AuditAction::DELIVERY_REQUESTED,
+            entity: $this->transaction,
+            user: Auth::user(),
+            details: [
+                'payment_method' => $this->transaction->payment_method,
+                'amount' => $this->transaction->total_amount,
+                'customer_request' => 'paid_delivery_request'
+            ]
+        );
+        
+        session()->flash('success', 'Paid delivery request submitted. We will contact you within 24 hours with delivery fee details and schedule delivery.');
     }
 
-    public function render()
+    public function render(): View
     {
-        $this->loadTransaction($this->transaction);
+        return view('livewire.customer.orders.show', [
+            'stats' => $this->getOrderStats(),
+        ]);
+    }
 
-        return view('livewire.customer.orders.show');
+    private function getOrderStats(): array
+    {
+        return [
+            'total_items' => $this->transaction->items->count(),
+            'total_value' => $this->transaction->total_amount,
+            'order_date' => $this->transaction->transaction_date,
+            'payment_status' => $this->transaction->payment_status,
+            'payment_method' => $this->transaction->payment_method,
+            'has_pickup' => (bool) $this->transaction->receipt?->pickup,
+            'pickup_status' => $this->transaction->receipt?->pickup?->pickup_status,
+        ];
     }
 }

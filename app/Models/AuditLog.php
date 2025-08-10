@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Carbon\CarbonImmutable;
+use Database\Factories\AuditLogFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -20,14 +21,12 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property int $entity_id Morphable entity ID
  * @property string|null $details Additional info
  * @property CarbonImmutable $logged_at When action occurred
- * @property CarbonImmutable|null $created_at
- * @property CarbonImmutable|null $updated_at
  * @property-read User $user User who performed the action
  * @property-read Model|Transaction|User|Product|StockAlert $entity Morphable entity (e.g., Transaction, User)
  */
 final class AuditLog extends Model
 {
-    /** @use HasFactory<\Database\Factories\AuditLogFactory> */
+    /** @use HasFactory<AuditLogFactory> */
     use HasFactory;
 
     public $timestamps = false;
@@ -73,5 +72,13 @@ final class AuditLog extends Model
     public function entity(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'details' => 'array',
+            'logged_at' => 'datetime',
+        ];
     }
 }

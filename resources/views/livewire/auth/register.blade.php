@@ -1,6 +1,8 @@
 <?php
 
+use App\Enums\AuditAction;
 use App\Models\User;
+use App\Services\AuditLogService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -31,8 +33,26 @@ new #[Layout('components.layouts.auth')] class extends Component {
         $validated['role'] = 'customer';
 
         event(new Registered(($user = User::create($validated))));
+        
+        $auditLogService = app(AuditLogService::class);
+        
+        // Log customer registration
+        $auditLogService->logUserManagement(
+            AuditAction::CUSTOMER_REGISTERED,
+            $user,
+            null,
+            [
+                'registered_name' => $validated['name'],
+                'registered_email' => $validated['email'],
+                'registered_phone' => $validated['phone'],
+                'role' => 'customer',
+            ]
+        );
 
         Auth::login($user);
+        
+        // Log the login after registration
+        $auditLogService->logAuth(AuditAction::USER_LOGIN, $user);
 
         $this->redirect(route('dashboard', absolute: false), navigate: true);
     }

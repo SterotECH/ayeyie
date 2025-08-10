@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\AuditAction;
+use App\Services\AuditLogService;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
@@ -50,6 +52,17 @@ new #[Layout('components.layouts.auth')] class extends Component {
                 ])->save();
 
                 event(new PasswordReset($user));
+                
+                // Log the password reset event
+                $auditLogService = app(AuditLogService::class);
+                $auditLogService->logAuth(
+                    AuditAction::USER_PASSWORD_RESET,
+                    $user,
+                    [
+                        'reset_email' => $user->email,
+                        'reset_method' => 'email_link',
+                    ]
+                );
             }
         );
 

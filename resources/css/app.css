@@ -11,28 +11,159 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
-    --color-zinc-50: var(--color-gray-50);
-    --color-zinc-100: var(--color-gray-100);
-    --color-zinc-200: var(--color-gray-200);
-    --color-zinc-300: var(--color-gray-300);
-    --color-zinc-400: var(--color-gray-400);
-    --color-zinc-500: var(--color-gray-500);
-    --color-zinc-600: var(--color-gray-600);
-    --color-zinc-700: var(--color-gray-700);
-    --color-zinc-800: var(--color-gray-800);
-    --color-zinc-900: var(--color-gray-900);
-    --color-zinc-950: var(--color-gray-950);
+    /* Ayeyie Poultry Feed Design System - Light Mode Base Tokens */
 
-    --color-accent: var(--color-amber-400);
-    --color-accent-content: var(--color-amber-600);
-    --color-accent-foreground: var(--color-amber-950);
+    /* Base Tokens */
+    --background: oklch(0.99 0.001 0);              /* Main app background */
+    --card: oklch(1.00 0.000 0);                    /* Card background */
+    --card-hover: oklch(0.98 0.001 50);             /* Card hover state */
+    --card-active: oklch(0.96 0.002 45);            /* Card active state */
+    --icon: oklch(0.45 0.008 0);                    /* Default icon color */
+
+    /* Brand Colors */
+    --primary: oklch(0.65 0.25 35);                 /* Warm Orange */
+    --primary-hover: oklch(0.58 0.22 32);           /* Primary hover */
+    --primary-active: oklch(0.48 0.18 28);          /* Primary active */
+    --secondary: oklch(0.65 0.20 115);              /* Forest Green */
+    --secondary-hover: oklch(0.58 0.18 112);        /* Secondary hover */
+    --accent: oklch(0.72 0.15 52);                  /* Golden Corn */
+    --accent-hover: oklch(0.64 0.13 50);            /* Accent hover */
+
+    /* Surface & States */
+    --muted: oklch(0.96 0.002 45);                  /* Muted backgrounds */
+    --disabled: oklch(0.87 0.006 0);                /* Disabled states */
+
+    /* Status Colors */
+    --success: oklch(0.65 0.20 132);                /* Fresh Green */
+    --success-hover: oklch(0.58 0.18 130);          /* Success hover */
+    --warning: oklch(0.73 0.16 72);                 /* Golden Yellow */
+    --warning-hover: oklch(0.65 0.14 70);           /* Warning hover */
+    --error: oklch(0.58 0.22 5);                    /* Barn Red */
+    --error-hover: oklch(0.52 0.20 4);              /* Error hover */
+    --info: oklch(0.65 0.20 205);                   /* Sky Blue */
+    --info-hover: oklch(0.58 0.18 202);             /* Info hover */
+
+    /* Borders & Focus */
+    --border-color: oklch(0.92 0.004 0);            /* Default borders */
+    --border-hover: oklch(0.87 0.006 0);            /* Border hover */
+    --ring-color: oklch(0.65 0.25 35);              /* Focus rings */
+
+    /* Text Colors */
+    --text-primary: oklch(0.15 0.006 0);            /* Primary text */
+    --text-secondary: oklch(0.45 0.008 0);          /* Secondary text */
+    --text-muted: oklch(0.60 0.006 0);              /* Muted text */
+    --text-disabled: oklch(0.74 0.008 0);           /* Disabled text */
+
+    /* Tailwind Color Mappings */
+    --color-background: var(--background);
+    --color-card: var(--card);
+    --color-card-hover: var(--card-hover);
+    --color-card-active: var(--card-active);
+    --color-icon: var(--icon);
+    --color-primary: var(--primary);
+    --color-primary-hover: var(--primary-hover);
+    --color-primary-active: var(--primary-active);
+    --color-secondary: var(--secondary);
+    --color-secondary-hover: var(--secondary-hover);
+    --color-accent: var(--accent);
+    --color-accent-hover: var(--accent-hover);
+    --color-muted: var(--muted);
+    --color-disabled: var(--disabled);
+    --color-success: var(--success);
+    --color-success-hover: var(--success-hover);
+    --color-warning: var(--warning);
+    --color-warning-hover: var(--warning-hover);
+    --color-error: var(--error);
+    --color-error-hover: var(--error-hover);
+    --color-info: var(--info);
+    --color-info-hover: var(--info-hover);
+    --color-border: var(--border-color);
+    --color-border-hover: var(--border-hover);
+    --color-ring: var(--ring-color);
+    --color-text-primary: var(--text-primary);
+    --color-text-secondary: var(--text-secondary);
+    --color-text-muted: var(--text-muted);
+    --color-text-disabled: var(--text-disabled);
+
+    /* Legacy Flux mappings */
+    --color-zinc-500: var(--muted);
+    --color-accent-content: var(--accent);
+    --color-accent-foreground: oklch(0.98 0.002 0);
+
+    /* Typography Scale */
+    --font-size-xs: 0.75rem;      /* 12px */
+    --font-size-sm: 0.875rem;     /* 14px */
+    --font-size-base: 1rem;       /* 16px */
+    --font-size-lg: 1.125rem;     /* 18px */
+    --font-size-xl: 1.25rem;      /* 20px */
+    --font-size-2xl: 1.5rem;      /* 24px */
+    --font-size-3xl: 1.875rem;    /* 30px */
+    --font-size-4xl: 2.25rem;     /* 36px */
+    --font-size-5xl: 3rem;        /* 48px */
+
+    /* Border Radius */
+    --radius-sm: 0.25rem;         /* 4px */
+    --radius-md: 0.375rem;        /* 6px */
+    --radius-lg: 0.5rem;          /* 8px */
+    --radius-xl: 0.75rem;         /* 12px */
+    --radius-2xl: 1rem;           /* 16px */
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 oklch(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px oklch(0 0 0 / 0.1), 0 2px 4px -2px oklch(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px oklch(0 0 0 / 0.1), 0 4px 6px -4px oklch(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px oklch(0 0 0 / 0.1), 0 8px 10px -6px oklch(0 0 0 / 0.1);
 }
 
 @layer theme {
     .dark {
-        --color-accent: var(--color-amber-400);
-        --color-accent-content: var(--color-amber-400);
-        --color-accent-foreground: var(--color-amber-950);
+        /* Ayeyie Poultry Feed Design System - Dark Mode Base Tokens */
+
+        /* Base Tokens */
+        --background: oklch(0.12 0.004 0);              /* Dark app background */
+        --card: oklch(0.18 0.008 0);                    /* Dark card background */
+        --card-hover: oklch(0.20 0.010 0);              /* Dark card hover */
+        --card-active: oklch(0.22 0.012 0);             /* Dark card active */
+        --icon: oklch(0.75 0.004 0);                    /* Light icon color */
+
+        /* Brand Colors - Adjusted for dark backgrounds */
+        --primary: oklch(0.70 0.22 35);                 /* Lighter warm orange */
+        --primary-hover: oklch(0.75 0.24 37);           /* Primary hover */
+        --primary-active: oklch(0.80 0.26 39);          /* Primary active */
+        --secondary: oklch(0.70 0.18 115);              /* Lighter forest green */
+        --secondary-hover: oklch(0.75 0.20 117);        /* Secondary hover */
+        --accent: oklch(0.75 0.14 52);                  /* Lighter golden corn */
+        --accent-hover: oklch(0.78 0.16 54);            /* Accent hover */
+
+        /* Surface & States */
+        --muted: oklch(0.16 0.006 0);                   /* Dark muted backgrounds */
+        --disabled: oklch(0.30 0.012 0);                /* Dark disabled states */
+
+        /* Status Colors - Adjusted for dark mode */
+        --success: oklch(0.70 0.18 132);                /* Lighter fresh green */
+        --success-hover: oklch(0.75 0.20 134);          /* Success hover */
+        --warning: oklch(0.75 0.14 72);                 /* Lighter golden yellow */
+        --warning-hover: oklch(0.78 0.16 74);           /* Warning hover */
+        --error: oklch(0.65 0.20 5);                    /* Lighter barn red */
+        --error-hover: oklch(0.68 0.22 7);              /* Error hover */
+        --info: oklch(0.70 0.18 205);                   /* Lighter sky blue */
+        --info-hover: oklch(0.75 0.20 207);             /* Info hover */
+
+        /* Borders & Focus */
+        --border-color: oklch(0.25 0.008 0);            /* Dark borders */
+        --border-hover: oklch(0.30 0.012 0);            /* Dark border hover */
+        --ring-color: oklch(0.70 0.22 35);              /* Dark focus rings */
+
+        /* Text Colors */
+        --text-primary: oklch(0.95 0.002 0);            /* Light primary text */
+        --text-secondary: oklch(0.75 0.004 0);          /* Light secondary text */
+        --text-muted: oklch(0.55 0.006 0);              /* Light muted text */
+        --text-disabled: oklch(0.40 0.014 0);           /* Light disabled text */
+
+        /* Legacy Flux mappings */
+        --color-zinc-500: var(--muted);
+        --color-accent-content: var(--accent);
+        --color-accent-foreground: oklch(0.15 0.006 0);
     }
 }
 

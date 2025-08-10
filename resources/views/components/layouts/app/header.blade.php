@@ -15,7 +15,7 @@
 
             <flux:navbar class="-mb-px max-lg:hidden">
                 <flux:navbar.item href="{{ route('dashboard') }}" icon="layout-grid"
-                    :current="request() - > routeIs('dashboard')">
+                    :current="request()->routeIs('dashboard')">
                     Dashboard
                 </flux:navbar.item>
             </flux:navbar>
@@ -41,7 +41,7 @@
 
             <!-- Desktop User Menu -->
             <flux:dropdown position="top" align="end">
-                <flux:profile class="cursor-pointer" :initials="auth() - > user() - > initials()" />
+                <flux:profile class="cursor-pointer" :initials="auth()->user()->initials()" />
 
                 <flux:menu>
                     <flux:menu.radio.group>
@@ -93,7 +93,7 @@
             <flux:navlist variant="outline">
                 <flux:navlist.group heading="Platform">
                     <flux:navlist.item href="{{ route('dashboard') }}" icon="layout-grid"
-                        :current="request() - > routeIs('dashboard')">
+                        :current="request()->routeIs('dashboard')">
                         Dashboard
                     </flux:navlist.item>
                 </flux:navlist.group>

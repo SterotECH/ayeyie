@@ -1,60 +1,59 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Admin\SuspiciousActivity;
 
 use App\Models\SuspiciousActivity;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Query\Builder;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-class Index extends Component
+final class Index extends Component
 {
-
     use WithPagination;
 
-    public string $severity = '';
-    public string $dateFrom = '';
-    public string $dateTo = '';
     public string $search = '';
-    public string $sortField = 'detected_at';
+
+    public array $filters = [
+        'severity' => '',
+        'dateFrom' => '',
+        'dateTo' => '',
+    ];
+
+    public string $sortBy = 'detected_at';
+
     public string $sortDirection = 'desc';
+
+    public int $perPage = 15;
 
     public function updatingSearch(): void
     {
         $this->resetPage();
     }
 
-    public function updatingSeverity(): void
-    {
-        $this->resetPage();
-    }
-
-    public function updatingDateFrom(): void
-    {
-        $this->resetPage();
-    }
-
-    public function updatingDateTo(): void
+    public function updatingFilters(): void
     {
         $this->resetPage();
     }
 
     public function sortBy(string $field): void
     {
-        if ($this->sortField === $field) {
+        if ($this->sortBy === $field) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
         } else {
-            $this->sortField = $field;
+            $this->sortBy = $field;
             $this->sortDirection = 'asc';
         }
     }
 
     public function resetFilters(): void
     {
-        $this->severity = '';
-        $this->dateFrom = '';
-        $this->dateTo = '';
+        $this->filters = [
+            'severity' => '',
+            'dateFrom' => '',
+            'dateTo' => '',
+        ];
         $this->search = '';
         $this->resetPage();
     }
@@ -63,33 +62,50 @@ class Index extends Component
     {
         $query = SuspiciousActivity::query()->with(['user']);
 
-        if ($this->severity) {
-            $query->where('severity', $this->severity);
+        if ($this->filters['severity']) {
+            $query->where('severity', $this->filters['severity']);
         }
 
-        if ($this->dateFrom) {
-            $query->where('detected_at', '>=', $this->dateFrom);
+        if ($this->filters['dateFrom']) {
+            $query->where('detected_at', '>=', $this->filters['dateFrom']);
         }
 
-        if ($this->dateTo) {
-            $query->where('detected_at', '<=', $this->dateTo . ' 23:59:59');
+        if ($this->filters['dateTo']) {
+            $query->where('detected_at', '<=', $this->filters['dateTo'] . ' 23:59:59');
         }
 
         if ($this->search) {
             $search = '%' . $this->search . '%';
-            $query->where(function (Builder $q) use ($search) {
-                $q->whereLike('description',  $search)
-                    ->orWhereHas('user', function (Builder $u) use ($search) {
-                        $u->whereLike('name', $search)
-                            ->orWhereLike('email',  $search);
+            $query->where(function ($q) use ($search) {
+                $q->where('description', 'like', $search)
+                    ->orWhereHas('user', function ($u) use ($search) {
+                        $u->where('name', 'like', $search)
+                            ->orWhere('email', 'like', $search);
                     });
             });
         }
 
-        $activities = $query->orderBy($this->sortField, $this->sortDirection)
-            ->paginate(15);
+        $activities = $query->orderBy($this->sortBy, $this->sortDirection)
+            ->paginate($this->perPage);
+
         return view('livewire.admin.suspicious-activity.index', [
-            'activities' => $activities
+            'activities' => $activities,
+            'stats' => $this->getStats(),
         ]);
+    }
+
+    private function getStats(): array
+    {
+        $total = SuspiciousActivity::count();
+        $high = SuspiciousActivity::where('severity', 'high')->count();
+        $medium = SuspiciousActivity::where('severity', 'medium')->count();
+        $low = SuspiciousActivity::where('severity', 'low')->count();
+
+        return [
+            'total' => $total,
+            'high' => $high,
+            'medium' => $medium,
+            'low' => $low,
+        ];
     }
 }

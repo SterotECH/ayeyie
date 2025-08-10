@@ -10,29 +10,54 @@ class Index extends Component
 {
     use WithPagination;
 
-    public $search = '';
-    public $dateFilter = '';
-    public $logLevelFilter = '';
+    public string $search = '';
+    public array $filters = [
+        'dateFilter' => '',
+        'logLevelFilter' => ''
+    ];
+    public string $sortBy = 'logged_at';
+    public string $sortDirection = 'desc';
+    public int $perPage = 15;
 
     protected $queryString = [
         'search' => ['except' => ''],
-        'dateFilter' => ['except' => ''],
-        'logLevelFilter' => ['except' => ''],
+        'filters' => ['except' => []],
+        'perPage' => ['except' => 15],
     ];
 
-    public function updatingSearch()
+    public function updatingSearch(): void
     {
         $this->resetPage();
     }
 
-    public function updatingDateFilter()
+    public function updatingFilters(): void
     {
         $this->resetPage();
     }
 
-    public function updatingLogLevelFilter()
+    public function sortBy(string $field): void
     {
-        $this->resetPage();
+        if ($this->sortBy === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortBy = $field;
+            $this->sortDirection = 'asc';
+        }
+    }
+
+    private function getStats(): array
+    {
+        $total = AuditLog::count();
+        $today = AuditLog::whereDate('logged_at', today())->count();
+        $critical = AuditLog::where('log_level', 'critical')->count();
+        $errors = AuditLog::where('log_level', 'error')->count();
+
+        return [
+            'total' => $total,
+            'today' => $today,
+            'critical' => $critical,
+            'errors' => $errors
+        ];
     }
 
     public function render()
@@ -46,23 +71,24 @@ class Index extends Component
                         ->orWhere('entity_id', 'like', '%' . $this->search . '%');
                 });
             })
-            ->when($this->dateFilter, function ($query) {
-                return match ($this->dateFilter) {
+            ->when($this->filters['dateFilter'], function ($query) {
+                return match ($this->filters['dateFilter']) {
                     'today' => $query->whereDate('logged_at', today()),
                     'week' => $query->whereBetween('logged_at', [now()->startOfWeek(), now()->endOfWeek()]),
                     'month' => $query->whereBetween('logged_at', [now()->startOfMonth(), now()->endOfMonth()]),
                     default => $query
                 };
             })
-            ->when($this->logLevelFilter, function ($query) {
-                return $query->where('log_level', $this->logLevelFilter);
+            ->when($this->filters['logLevelFilter'], function ($query) {
+                return $query->where('log_level', $this->filters['logLevelFilter']);
             })
             ->with('user')
-            ->latest('logged_at')
-            ->paginate(15);
+            ->orderBy($this->sortBy, $this->sortDirection)
+            ->paginate($this->perPage);
 
         return view('livewire.admin.audit-log.index', [
-            'logs' => $logs
+            'logs' => $logs,
+            'stats' => $this->getStats()
         ]);
     }
 }

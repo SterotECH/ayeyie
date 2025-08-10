@@ -1,237 +1,153 @@
-<div>
-    <div class="py-6">
-        <div class="">
-            <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
-                <h2 class="text-accent text-2xl font-bold">
-                    Suspicious Activities
-                </h2>
-                <div class="mt-4 md:mt-0">
-                    <a class="text-sm text-gray-600 hover:text-gray-900" href="{{ route('dashboard') }}">
-                        Dashboard
-                    </a>
-                    <span class="mx-2 text-gray-500">/</span>
-                    <span class="text-sm text-gray-900">Fraud Alert</span>
-                </div>
-            </div>
-
-            <div class="overflow-hidden bg-zinc-50 shadow-sm sm:rounded-lg dark:bg-zinc-800">
-                <!-- Filter Section -->
-                <div class="border-b border-gray-200 p-6">
-                    <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
-                        <div>
-                            <flux:select id="severity" wire:model="severity" label="Severity">
-                                <flux:select.option value="">All Severities</flux:select.option>
-                                <flux:select.option value="low">Low</flux:select.option>
-                                <flux:select.option value="medium">Medium</flux:select.option>
-                                <flux:select.option value="high">High</flux:select.option>
-                            </flux:select>
-                        </div>
-
-                        <div>
-                            <flux:input id="dateFrom" type="date" label="Date From" wire:model="dateFrom" />
-                        </div>
-
-                        <div>
-                            <flux:input id="dateTo" type="date" wire:model="dateTo" label="Date To" />
-                        </div>
-
-                        <div>
-                            <flux:input id="search" type="text" wire:model.debounce.300ms="search"
-                                placeholder="Search description or user..." label="Search" />
-                        </div>
-                    </div>
-
-                    <div class="mt-4 flex justify-end">
-                        <flux:button variant="filled" wire:click="resetFilters">
-                            Reset Filters
-                        </flux:button>
-                    </div>
-                </div>
-
-                <!-- Loading Indicator -->
-                <div class="flex items-center justify-center border-b border-gray-200 p-4" wire:loading>
-                    <svg class="h-5 w-5 animate-spin text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                            stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                        </path>
-                    </svg>
-                    <span class="ml-2 text-sm text-gray-700">Loading...</span>
-                </div>
-
-                <!-- Table Section -->
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-900">
-                        <thead class="bg-gray-50 dark:bg-gray-700">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                                    scope="col">
-                                    <button class="group inline-flex items-center" wire:click="sortBy('activity_id')">
-                                        ID
-                                        @if ($sortField == 'activity_id')
-                                            <svg class="ml-1 h-4 w-4 text-gray-400" fill="currentColor"
-                                                viewBox="0 0 20 20">
-                                                @if ($sortDirection == 'asc')
-                                                    <path fill-rule="evenodd"
-                                                        d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L10 4.414l-3.293 3.293a1 1 0 01-1.414 0z"
-                                                        clip-rule="evenodd"></path>
-                                                @else
-                                                    <path fill-rule="evenodd"
-                                                        d="M14.707 12.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L10 15.586l3.293-3.293a1 1 0 011.414 0z"
-                                                        clip-rule="evenodd"></path>
-                                                @endif
-                                            </svg>
-                                        @endif
-                                    </button>
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                                    scope="col">
-                                    <button class="group inline-flex items-center" wire:click="sortBy('user_id')">
-                                        User
-                                        @if ($sortField == 'user_id')
-                                            <svg class="ml-1 h-4 w-4 text-gray-400" fill="currentColor"
-                                                viewBox="0 0 20 20">
-                                                @if ($sortDirection == 'asc')
-                                                    <path fill-rule="evenodd"
-                                                        d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L10 4.414l-3.293 3.293a1 1 0 01-1.414 0z"
-                                                        clip-rule="evenodd"></path>
-                                                @else
-                                                    <path fill-rule="evenodd"
-                                                        d="M14.707 12.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L10 15.586l3.293-3.293a1 1 0 011.414 0z"
-                                                        clip-rule="evenodd"></path>
-                                                @endif
-                                            </svg>
-                                        @endif
-                                    </button>
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                                    scope="col">
-                                    <button class="group inline-flex items-center" wire:click="sortBy('description')">
-                                        Description
-                                        @if ($sortField == 'description')
-                                            <svg class="ml-1 h-4 w-4 text-gray-400" fill="currentColor"
-                                                viewBox="0 0 20 20">
-                                                @if ($sortDirection == 'asc')
-                                                    <path fill-rule="evenodd"
-                                                        d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L10 4.414l-3.293 3.293a1 1 0 01-1.414 0z"
-                                                        clip-rule="evenodd"></path>
-                                                @else
-                                                    <path fill-rule="evenodd"
-                                                        d="M14.707 12.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L10 15.586l3.293-3.293a1 1 0 011.414 0z"
-                                                        clip-rule="evenodd"></path>
-                                                @endif
-                                            </svg>
-                                        @endif
-                                    </button>
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                                    scope="col">
-                                    <button class="group inline-flex items-center" wire:click="sortBy('severity')">
-                                        Severity
-                                        @if ($sortField == 'severity')
-                                            <svg class="ml-1 h-4 w-4 text-gray-400" fill="currentColor"
-                                                viewBox="0 0 20 20">
-                                                @if ($sortDirection == 'asc')
-                                                    <path fill-rule="evenodd"
-                                                        d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L10 4.414l-3.293 3.293a1 1 0 01-1.414 0z"
-                                                        clip-rule="evenodd"></path>
-                                                @else
-                                                    <path fill-rule="evenodd"
-                                                        d="M14.707 12.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L10 15.586l3.293-3.293a1 1 0 011.414 0z"
-                                                        clip-rule="evenodd"></path>
-                                                @endif
-                                            </svg>
-                                        @endif
-                                    </button>
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                                    scope="col">
-                                    <button class="group inline-flex items-center" wire:click="sortBy('detected_at')">
-                                        Detected At
-                                        @if ($sortField == 'detected_at')
-                                            <svg class="ml-1 h-4 w-4 text-gray-400" fill="currentColor"
-                                                viewBox="0 0 20 20">
-                                                @if ($sortDirection == 'asc')
-                                                    <path fill-rule="evenodd"
-                                                        d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L10 4.414l-3.293 3.293a1 1 0 01-1.414 0z"
-                                                        clip-rule="evenodd"></path>
-                                                @else
-                                                    <path fill-rule="evenodd"
-                                                        d="M14.707 12.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L10 15.586l3.293-3.293a1 1 0 011.414 0z"
-                                                        clip-rule="evenodd"></path>
-                                                @endif
-                                            </svg>
-                                        @endif
-                                    </button>
-                                </th>
-                                <th class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500"
-                                    scope="col">
-                                    Actions
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200 bg-zinc-50 dark:divide-gray-900 dark:bg-zinc-800">
-                            @forelse($activities as $activity)
-                                <tr wire:key="activity-{{ $activity->activity_id }}">
-                                    <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
-                                        {{ $activity->activity_id }}
-                                    </td>
-                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                                        {{ $activity->user->name ?? 'Unknown' }}<br>
-                                        <span class="text-xs text-gray-400">{{ $activity->user->email ?? '' }}</span>
-                                    </td>
-                                    <td class="max-w-xs truncate px-6 py-4 text-sm text-gray-500">
-                                        {{ $activity->description }}
-                                    </td>
-                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                                        @if ($activity->severity == 'low')
-                                            <span
-                                                class="rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
-                                                Low
-                                            </span>
-                                        @elseif($activity->severity == 'medium')
-                                            <span
-                                                class="rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-800">
-                                                Medium
-                                            </span>
-                                        @elseif($activity->severity == 'high')
-                                            <span
-                                                class="rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800">
-                                                High
-                                            </span>
-                                        @else
-                                            <span
-                                                class="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-800">
-                                                Unknown
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                                        {{ $activity->detected_at->format('M d, Y H:i') }}
-                                    </td>
-                                    <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                                        <a class="rounded-md bg-indigo-50 px-3 py-1 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-900"
-                                            href="{{ route('admin.suspicious_activities.show', $activity) }}">
-                                            View
-                                        </a>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td class="px-6 py-4 text-center text-sm text-gray-500" colspan="6">
-                                        No suspicious activities found
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Pagination -->
-                {{ $activities->links() }}
-            </div>
+<x-ui.admin-page-layout
+    title="Suspicious Activities"
+    description="Monitor and investigate suspicious activities across the system"
+    :breadcrumbs="[['label' => 'Suspicious Activities']]"
+    :stats="[
+        ['label' => 'Total Activities', 'value' => number_format($stats['total']), 'icon' => 'shield-exclamation', 'iconBg' => 'bg-primary/10', 'iconColor' => 'text-primary'],
+        ['label' => 'High Severity', 'value' => number_format($stats['high']), 'icon' => 'exclamation-triangle', 'iconBg' => 'bg-error/10', 'iconColor' => 'text-error'],
+        ['label' => 'Medium Severity', 'value' => number_format($stats['medium']), 'icon' => 'exclamation-circle', 'iconBg' => 'bg-warning/10', 'iconColor' => 'text-warning'],
+        ['label' => 'Low Severity', 'value' => number_format($stats['low']), 'icon' => 'information-circle', 'iconBg' => 'bg-success/10', 'iconColor' => 'text-success']
+    ]"
+    :show-filters="true"
+    search-placeholder="Search activities, users, or descriptions..."
+    :has-active-filters="$search || array_filter($filters)"
+>
+    <x-slot:filterSlot>
+        <!-- Severity Filter -->
+        <div>
+            <flux:field>
+                <flux:label>Severity Level</flux:label>
+                <flux:select wire:model.live="filters.severity" placeholder="All Severities">
+                    <flux:select.option value="low">Low Risk</flux:select.option>
+                    <flux:select.option value="medium">Medium Risk</flux:select.option>
+                    <flux:select.option value="high">High Risk</flux:select.option>
+                </flux:select>
+            </flux:field>
         </div>
-    </div>
-</div>
+
+        <!-- Date From -->
+        <div>
+            <flux:field>
+                <flux:label>Date From</flux:label>
+                <flux:input type="date" wire:model.live="filters.dateFrom" />
+            </flux:field>
+        </div>
+
+        <!-- Date To -->
+        <div>
+            <flux:field>
+                <flux:label>Date To</flux:label>
+                <flux:input type="date" wire:model.live="filters.dateTo" />
+            </flux:field>
+        </div>
+
+        <!-- Per Page -->
+        <div class="flex items-end">
+            <flux:field>
+                <flux:label>Per Page</flux:label>
+                <flux:select wire:model.live="perPage">
+                    <flux:select.option value="15">15</flux:select.option>
+                    <flux:select.option value="25">25</flux:select.option>
+                    <flux:select.option value="50">50</flux:select.option>
+                    <flux:select.option value="100">100</flux:select.option>
+                </flux:select>
+            </flux:field>
+        </div>
+    </x-slot:filterSlot>
+
+    <!-- Main Table -->
+    <x-ui.admin-table 
+        :headers="[
+            ['label' => 'ID', 'field' => 'activity_id', 'sortable' => true],
+            ['label' => 'User', 'field' => 'user_id', 'sortable' => true],
+            ['label' => 'Description', 'field' => 'description', 'sortable' => true],
+            ['label' => 'Severity', 'field' => 'severity', 'sortable' => true],
+            ['label' => 'Detected At', 'field' => 'detected_at', 'sortable' => true],
+            ['label' => 'Actions']
+        ]"
+        :items="$activities"
+        empty-title="No Suspicious Activities Found"
+        empty-description="No suspicious activities match your current filters"
+        :has-active-filters="$search || array_filter($filters)"
+        :sort-by="$sortBy"
+        :sort-direction="$sortDirection"
+    >
+        @foreach($activities as $item)
+            <tr class="hover:bg-muted transition-colors">
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-text-primary">#{{ $item->activity_id }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 h-8 w-8">
+                            <div class="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                <span class="text-xs font-medium text-primary">
+                                    {{ $item->user ? strtoupper(substr($item->user->name, 0, 2)) : '?' }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="ml-3">
+                            <div class="text-sm font-medium text-text-primary">
+                                {{ $item->user->name ?? 'Unknown User' }}
+                            </div>
+                            @if($item->user?->email)
+                                <div class="text-sm text-text-secondary">{{ $item->user->email }}</div>
+                            @endif
+                        </div>
+                    </div>
+                </td>
+                <td class="px-6 py-4">
+                    <div class="text-sm text-text-primary max-w-xs truncate" title="{{ $item->description }}">
+                        {{ $item->description }}
+                    </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    @if($item->severity === 'high')
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-error/10 text-error">
+                            <flux:icon.exclamation-triangle class="w-3 h-3 mr-1" />
+                            High Risk
+                        </span>
+                    @elseif($item->severity === 'medium')
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warning/10 text-warning">
+                            <flux:icon.exclamation-circle class="w-3 h-3 mr-1" />
+                            Medium Risk
+                        </span>
+                    @elseif($item->severity === 'low')
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">
+                            <flux:icon.information-circle class="w-3 h-3 mr-1" />
+                            Low Risk
+                        </span>
+                    @else
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-text-secondary">
+                            <flux:icon.question-mark-circle class="w-3 h-3 mr-1" />
+                            Unknown
+                        </span>
+                    @endif
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
+                    <div>{{ $item->detected_at->format('M j, Y') }}</div>
+                    <div class="text-xs">{{ $item->detected_at->format('g:i A') }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div class="flex items-center justify-end space-x-2">
+                        <flux:button href="{{ route('admin.suspicious_activities.show', $item) }}" variant="ghost" size="sm" icon="eye" title="View Details" />
+                    </div>
+                </td>
+            </tr>
+        @endforeach
+
+        {{-- Empty Action Slot --}}
+        <x-slot:emptyAction>
+            <div class="text-center">
+                <p class="text-text-secondary text-sm mb-4">No suspicious activities detected yet.</p>
+            </div>
+        </x-slot:emptyAction>
+    </x-ui.admin-table>
+
+    <!-- Pagination -->
+    <x-ui.admin-pagination 
+        :items="$activities" 
+        item-name="activities"
+        :has-active-filters="$search || array_filter($filters)"
+    />
+</x-ui.admin-page-layout>

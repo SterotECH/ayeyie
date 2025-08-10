@@ -1,212 +1,176 @@
-<div class="overflow-hidden rounded-lg bg-zinc-50 shadow-xl dark:bg-gray-900 dark:bg-zinc-800">
-    <div
-        class="flex flex-col items-start justify-between gap-4 border-b border-gray-200 bg-gray-50 px-6 py-4 md:flex-row md:items-center dark:border-gray-700 dark:bg-gray-700 dark:bg-gray-800">
-        <h2 class="flex items-center gap-2 text-xl font-semibold text-gray-800 dark:text-white">
-            <svg class="h-6 w-6 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-            User Management
-        </h2>
-        <div class="flex items-center gap-3">
-            <div class="relative">
-                <input
-                    class="rounded-lg border border-gray-300 px-4 py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                    type="text" wire:model.debounce.300ms="searchTerm" placeholder="Search users..." />
-                <div class="absolute left-3 top-2.5 text-gray-400">
-                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                </div>
-            </div>
-            <flux:dropdown>
-                <flux:button>
-                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                    </svg>
-                    Filters
-                </flux:button>
-                <flux:menu>
-                    <div class="flex w-full flex-wrap items-end gap-4">
-                        <div>
-                            <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Filter by
-                                role</label>
-                            <select
-                                class="block w-full rounded-lg border border-gray-300 bg-zinc-50 p-2.5 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:bg-zinc-800 dark:text-white"
-                                wire:model.live.debounce="selectedRoleFilter">
-                                <option value="">All roles</option>
-                                @foreach ($roles as $role)
-                                    <option value="{{ $role }}">{{ ucfirst($role) }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                </flux:menu>
-            </flux:dropdown>
-            <flux:dropdown>
-                <flux:button>
-                    <span>{{ $perPage }} per page</span>
-                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </flux:button>
-                <flux:menu>
-                    <div class="py-1">
-                        <a class="{{ $perPage == 10 ? 'bg-gray-100 dark:bg-gray-700' : '' }} block cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            wire:click="$set('perPage', 10)">10 per page</a>
-                        <a class="{{ $perPage == 25 ? 'bg-gray-100 dark:bg-gray-700' : '' }} block cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            wire:click="$set('perPage', 25)">25 per page</a>
-                        <a class="{{ $perPage == 50 ? 'bg-gray-100 dark:bg-gray-700' : '' }} block cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            wire:click="$set('perPage', 50)">50 per page</a>
-                        <a class="{{ $perPage == 100 ? 'bg-gray-100 dark:bg-gray-700' : '' }} block cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            wire:click="$set('perPage', 100)">100 per page</a>
-                    </div>
-                </flux:menu>
-            </flux:dropdown>
-            <flux:button href="{{ route('admin.users.create') }}" variant="primary">
-                Add User
-            </flux:button>
+<x-ui.admin-page-layout
+    title="User Management"
+    description="Manage system users and their roles"
+    :breadcrumbs="[['label' => 'Users']]"
+    :stats="[
+        ['label' => 'Total Users', 'value' => number_format($stats['total']), 'icon' => 'users', 'iconBg' => 'bg-primary/10', 'iconColor' => 'text-primary'],
+        ['label' => 'Administrators', 'value' => number_format($stats['admin']), 'icon' => 'shield-check', 'iconBg' => 'bg-error/10', 'iconColor' => 'text-error'],
+        ['label' => 'Managers', 'value' => number_format($stats['manager']), 'icon' => 'user-group', 'iconBg' => 'bg-warning/10', 'iconColor' => 'text-warning'],
+        ['label' => 'Regular Users', 'value' => number_format($stats['user']), 'icon' => 'user', 'iconBg' => 'bg-success/10', 'iconColor' => 'text-success']
+    ]"
+    :show-filters="true"
+    search-placeholder="Search by name or email..."
+    :has-active-filters="$search || array_filter($filters)"
+>
+    <x-slot:actions>
+        <flux:button href="{{ route('admin.users.create') }}" variant="primary" icon="plus">
+            Add User
+        </flux:button>
+    </x-slot:actions>
 
+    <x-slot:filterSlot>
+        <!-- Role Filter -->
+        <div>
+            <flux:field>
+                <flux:label>Role</flux:label>
+                <flux:select wire:model.live="filters.role" placeholder="All Roles">
+                    <flux:select.option value="admin">Administrator</flux:select.option>
+                    <flux:select.option value="manager">Manager</flux:select.option>
+                    <flux:select.option value="user">User</flux:select.option>
+                </flux:select>
+            </flux:field>
         </div>
-    </div>
 
-    <!-- Users Table -->
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 dark:divide-gray-900">
-            <thead class="bg-gray-50 dark:bg-gray-700 dark:bg-gray-800">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
-                        scope="col">
-                        <div class="flex cursor-pointer items-center gap-1" wire:click="sortBy('name')">
-                            Name
-                            @if ($sortField === 'name')
-                                <svg class="{{ $sortDirection === 'asc' ? '' : 'rotate-180' }} h-3 w-3" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 15l7-7 7 7" />
-                                </svg>
-                            @endif
-                        </div>
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
-                        scope="col">
-                        <div class="flex cursor-pointer items-center gap-1" wire:click="sortBy('email')">
-                            Email
-                            @if ($sortField === 'email')
-                                <svg class="{{ $sortDirection === 'asc' ? '' : 'rotate-180' }} h-3 w-3" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 15l7-7 7 7" />
-                                </svg>
-                            @endif
-                        </div>
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
-                        scope="col">
-                        <div class="flex cursor-pointer items-center gap-1" wire:click="sortBy('role')">
-                            Role
-                            @if ($sortField === 'role')
-                                <svg class="{{ $sortDirection === 'asc' ? '' : 'rotate-180' }} h-3 w-3" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 15l7-7 7 7" />
-                                </svg>
-                            @endif
-                        </div>
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
-                        scope="col">
-                        <div class="flex cursor-pointer items-center gap-1" wire:click="sortBy('created_at')">
-                            Created At
-                            @if ($sortField === 'created_at')
-                                <svg class="{{ $sortDirection === 'asc' ? '' : 'rotate-180' }} h-3 w-3" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 15l7-7 7 7" />
-                                </svg>
-                            @endif
-                        </div>
-                    </th>
-                    <th class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
-                        scope="col">
-                        Actions
-                    </th>
-                </tr>
-            </thead>
-            <tbody
-                class="divide-y divide-gray-200 bg-zinc-50 dark:divide-gray-700 dark:divide-gray-900 dark:bg-gray-900 dark:bg-zinc-800">
-                @forelse ($users as $user)
-                    <tr>
-                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
-                            {{ $user->name }}
-                        </td>
-                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                            {{ $user->email }}
-                        </td>
-                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                            <span
-                                class="{{ $user->role === 'admin'
-                                    ? 'bg-red-100 text-red-800'
-                                    : ($user->role === 'manager'
-                                        ? 'bg-yellow-100 text-yellow-800'
-                                        : 'bg-green-100 text-green-800') }} inline-flex rounded-full px-2 text-xs font-semibold leading-5">
-                                {{ ucfirst($user->role) }}
-                            </span>
-                        </td>
-                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                            {{ $user->created_at->format('M d, Y') }}
-                        </td>
-                        <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                            <div class="flex justify-end gap-2">
-                                <flux:button href="{{ route('admin.users.show', $user) }}" variant="filled">
-                                    <flux:icon.eye class="size-5" />
-                                </flux:button>
-                                <flux:button href="{{ route('admin.users.edit', $user) }}">
-                                    <flux:icon.pencil-square class="size-5" />
-                                </flux:button>
-                                <flux:modal.trigger name="delete-user">
-                                    <flux:button wire:click="confirmUserDeletion({{ $user->user_id }})"
-                                        variant="danger">
-                                        <flux:icon.trash class="size-5" />
-                                    </flux:button>
-                                </flux:modal.trigger>
+        <!-- Per Page -->
+        <div class="flex items-end">
+            <flux:field>
+                <flux:label>Per Page</flux:label>
+                <flux:select wire:model.live="perPage">
+                    <flux:select.option value="15">15</flux:select.option>
+                    <flux:select.option value="25">25</flux:select.option>
+                    <flux:select.option value="50">50</flux:select.option>
+                    <flux:select.option value="100">100</flux:select.option>
+                </flux:select>
+            </flux:field>
+        </div>
+    </x-slot:filterSlot>
+
+    <!-- Main Table -->
+    <x-ui.admin-table 
+        :headers="[
+            ['label' => 'User', 'field' => 'name', 'sortable' => true],
+            ['label' => 'Email', 'field' => 'email', 'sortable' => true],
+            ['label' => 'Role', 'field' => 'role', 'sortable' => true],
+            ['label' => 'Joined', 'field' => 'created_at', 'sortable' => true],
+            ['label' => 'Actions']
+        ]"
+        :items="$users"
+        empty-title="No Users Found"
+        empty-description="No users match your current filters"
+        :has-active-filters="$search || array_filter($filters)"
+        :sort-by="$sortBy"
+        :sort-direction="$sortDirection"
+    >
+        @foreach($users as $item)
+            <tr class="hover:bg-muted transition-colors">
+                <td class="px-6 py-4">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 h-10 w-10">
+                            <div class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                <span class="text-sm font-medium text-primary">
+                                    {{ strtoupper(substr($item->name, 0, 2)) }}
+                                </span>
                             </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400" colspan="5">
-                            No users found.
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
+                        </div>
+                        <div class="ml-4">
+                            <div class="text-sm font-medium text-text-primary">
+                                {{ $item->name }}
+                            </div>
+                            <div class="text-sm text-text-secondary">
+                                ID: {{ $item->user_id }}
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-text-primary">{{ $item->email }}</div>
+                    @if($item->email_verified_at)
+                        <div class="flex items-center text-xs text-success mt-1">
+                            <flux:icon.check-circle class="w-3 h-3 mr-1" />
+                            Verified
+                        </div>
+                    @else
+                        <div class="flex items-center text-xs text-warning mt-1">
+                            <flux:icon.clock class="w-3 h-3 mr-1" />
+                            Pending
+                        </div>
+                    @endif
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    @if($item->role === 'admin')
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-error/10 text-error">
+                            <flux:icon.shield-check class="w-3 h-3 mr-1" />
+                            Administrator
+                        </span>
+                    @elseif($item->role === 'manager')
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warning/10 text-warning">
+                            <flux:icon.user-group class="w-3 h-3 mr-1" />
+                            Manager
+                        </span>
+                    @else
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">
+                            <flux:icon.user class="w-3 h-3 mr-1" />
+                            User
+                        </span>
+                    @endif
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
+                    <div>{{ $item->created_at->format('M j, Y') }}</div>
+                    <div class="text-xs">{{ $item->created_at->diffForHumans() }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div class="flex items-center justify-end space-x-2">
+                        <flux:button href="{{ route('admin.users.show', $item) }}" variant="ghost" size="sm" icon="eye" title="View User" />
+                        <flux:button href="{{ route('admin.users.edit', $item) }}" variant="ghost" size="sm" icon="pencil" title="Edit User" />
+                        <flux:modal.trigger name="delete-user">
+                            <flux:button wire:click="confirmUserDeletion({{ $item->user_id }})" variant="danger" size="sm" icon="trash" title="Delete User" />
+                        </flux:modal.trigger>
+                    </div>
+                </td>
+            </tr>
+        @endforeach
+
+        {{-- Empty Action Slot --}}
+        <x-slot:emptyAction>
+            <flux:button href="{{ route('admin.users.create') }}" variant="primary" icon="plus">
+                Add First User
+            </flux:button>
+        </x-slot:emptyAction>
+    </x-ui.admin-table>
 
     <!-- Pagination -->
-    <div class="border-t border-gray-200 px-6 py-4 dark:border-gray-700">
-        {{ $users->links() }}
-    </div>
+    <x-ui.admin-pagination 
+        :items="$users" 
+        item-name="users"
+        :has-active-filters="$search || array_filter($filters)"
+    />
 
     <!-- Delete User Confirmation Modal -->
-    <flux:modal class="md:w-96" name="delete-user">
+    <flux:modal name="delete-user" class="md:w-96">
         <div class="space-y-6">
-            <flux:heading size="lg">Delete User</flux:heading>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-                Are you sure you want to delete this user? This action cannot be undone.
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-10 h-10 bg-error/10 rounded-lg flex items-center justify-center">
+                        <flux:icon.exclamation-triangle class="w-5 h-5 text-error" />
+                    </div>
+                </div>
+                <div class="ml-3">
+                    <flux:heading size="lg">Delete User</flux:heading>
+                </div>
+            </div>
+            
+            <p class="text-sm text-text-secondary">
+                Are you sure you want to delete this user? This action cannot be undone and will permanently remove all user data.
             </p>
-            <div class="flex justify-end gap-3">
-                <flux:button wire:click="deleteUser" variant="danger">
+            
+            <div class="flex items-center justify-end space-x-3 pt-4 border-t border-border">
+                <flux:modal.close>
+                    <flux:button variant="ghost">Cancel</flux:button>
+                </flux:modal.close>
+                <flux:button wire:click="deleteUser" variant="danger" icon="trash">
                     Delete User
                 </flux:button>
             </div>
         </div>
     </flux:modal>
-</div>
+</x-ui.admin-page-layout>

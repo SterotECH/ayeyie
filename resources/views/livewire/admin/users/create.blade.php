@@ -1,86 +1,131 @@
-<div>
-    <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
-        <div class="md:grid md:grid-cols-3 md:gap-6">
-            <div class="md:col-span-1">
-                <div class="px-4 sm:px-0">
-                    <h3 class="text-accent text-lg font-medium">Create New User</h3>
-                    <p class="text-accent-content/50 mt-1 text-sm">
-                        Add a new user to the system with appropriate role and permissions.
-                    </p>
-                </div>
+<x-ui.admin-page-layout
+    title="Create New User"
+    description="Add a new user to the system with appropriate role and permissions"
+    :breadcrumbs="[
+        ['label' => 'Users', 'url' => route('admin.users.index')],
+        ['label' => 'Create User']
+    ]"
+    :show-filters="false"
+>
+    <x-slot:actions>
+        <flux:button href="{{ route('admin.users.index') }}" variant="ghost" icon="arrow-left">
+            Back to Users
+        </flux:button>
+    </x-slot:actions>
+
+    <div>
+        <div class="bg-card rounded-lg border border-border shadow-sm">
+            <div class="px-6 py-4 border-b border-border">
+                <h3 class="text-lg font-semibold text-text-primary">User Details</h3>
+                <p class="text-sm text-text-secondary mt-1">Enter the new user's information and account settings.</p>
             </div>
 
-            <div class="mt-5 md:col-span-2 md:mt-0">
-                <form wire:submit="save">
-                    <div class="overflow-hidden shadow sm:rounded-md">
-                        <div class="bg-zinc-50 px-4 py-5 sm:p-6 dark:bg-gray-900 dark:bg-zinc-800"">
-                            @if (session('message'))
-                                <div class="mb-4 rounded border border-green-400 bg-green-100 px-4 py-2 text-green-700">
-                                    {{ session('message') }}
-                                </div>
-                            @endif
-
-                            @if (session('error'))
-                                <div class="mb-4 rounded border border-red-400 bg-red-100 px-4 py-2 text-red-700">
-                                    {{ session('error') }}
-                                </div>
-                            @endif
-
-                            <div class="grid grid-cols-6 gap-6">
-                                <div class="col-span-6 sm:col-span-4">
-                                    <flux:input name="name" wire:model="form.name" label="Full Name" />
-                                </div>
-                                <div class="col-span-6 sm:col-span-4">
-                                    <flux:input name="phone" type="tel" wire:model="form.phone"
-                                        label="Phone Number" />
-                                </div>
-                                <div class="col-span-6 sm:col-span-4">
-                                    <flux:input name="email" type="email" wire:model="form.email"
-                                        label="Email Address" />
-                                    <p class="text-xs text-gray-500">Optional for walk-in customers</p>
-                                </div>
-
-                                <!-- Password -->
-                                <div class="col-span-6 sm:col-span-4">
-                                    <flux:input name="password" type="password" wire:model="form.password"
-                                        label="Password" />
-                                    <p class="text-xs text-gray-500">Leave blank for unregistered walk-ins</p>
-                                </div>
-
-                                <!-- Password Confirmation -->
-                                <div class="col-span-6 sm:col-span-4">
-                                    <flux:input name="password" type="password" wire:model="form.password_confirmation"
-                                        label="Confirm Password" />
-                                </div>
-
-                                <!-- Role -->
-                                <div class="col-span-6 sm:col-span-3">
-                                    <flux:select id="role" wire:model="form.role" label="Role">
-                                        <flux:select.option value="customer">Customer</flux:select.option>
-                                        <flux:select.option value="staff">Staff</flux:select.option>
-                                        <flux:select.option value="admin">Admin</flux:select.option>
-                                    </flux:select>
-                                </div>
-
-                                <!-- Language -->
-                                <div class="col-span-6 sm:col-span-3">
-                                    <label class="block text-sm font-medium text-gray-700" for="language"></label>
-                                    <flux:select id="language" label="Preferred Language" wire:model="form.language">
-                                        <flux:select.option value="en">English</flux:select.option>
-                                        <flux:select.option value="tw">Twi</flux:select.option>
-                                    </flux:select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-gray-50 px-4 py-3 text-right sm:px-6 dark:bg-gray-700 dark:bg-gray-900">
-                            <flux:button type="submit" variant="primary">
-                                Create User
-                            </flux:button>
+            <form wire:submit="save" class="px-6 py-6">
+                @if (session('message'))
+                    <div class="mb-6 p-4 rounded-lg bg-success/10 border border-success/20">
+                        <div class="flex items-center">
+                            <flux:icon.check-circle class="w-5 h-5 text-success mr-2" />
+                            <span class="text-success text-sm">{{ session('message') }}</span>
                         </div>
                     </div>
-                </form>
-            </div>
+                @endif
+
+                @if (session('error'))
+                    <div class="mb-6 p-4 rounded-lg bg-error/10 border border-error/20">
+                        <div class="flex items-center">
+                            <flux:icon.exclamation-triangle class="w-5 h-5 text-error mr-2" />
+                            <span class="text-error text-sm">{{ session('error') }}</span>
+                        </div>
+                    </div>
+                @endif
+
+                <div class="space-y-6">
+                    <!-- Name -->
+                    <div>
+                        <flux:field>
+                            <flux:label>Full Name</flux:label>
+                            <flux:input name="name" wire:model="form.name" placeholder="Enter full name" />
+                            <flux:error name="form.name" />
+                        </flux:field>
+                    </div>
+
+                    <!-- Email -->
+                    <div>
+                        <flux:field>
+                            <flux:label>Email Address</flux:label>
+                            <flux:input name="email" type="email" wire:model="form.email" placeholder="user@example.com" />
+                            <flux:description>Optional for walk-in customers</flux:description>
+                            <flux:error name="form.email" />
+                        </flux:field>
+                    </div>
+
+                    <!-- Phone -->
+                    <div>
+                        <flux:field>
+                            <flux:label>Phone Number</flux:label>
+                            <flux:input name="phone" type="tel" wire:model="form.phone" placeholder="Enter phone number" />
+                            <flux:error name="form.phone" />
+                        </flux:field>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Password -->
+                        <div>
+                            <flux:field>
+                                <flux:label>Password</flux:label>
+                                <flux:input name="password" type="password" wire:model="form.password" placeholder="Enter password" />
+                                <flux:description>Leave blank for unregistered walk-ins</flux:description>
+                                <flux:error name="form.password" />
+                            </flux:field>
+                        </div>
+
+                        <!-- Password Confirmation -->
+                        <div>
+                            <flux:field>
+                                <flux:label>Confirm Password</flux:label>
+                                <flux:input name="password_confirmation" type="password" wire:model="form.password_confirmation" placeholder="Confirm password" />
+                                <flux:error name="form.password_confirmation" />
+                            </flux:field>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Role -->
+                        <div>
+                            <flux:field>
+                                <flux:label>User Role</flux:label>
+                                <flux:select wire:model="form.role">
+                                    <flux:select.option value="user">User</flux:select.option>
+                                    <flux:select.option value="manager">Manager</flux:select.option>
+                                    <flux:select.option value="admin">Administrator</flux:select.option>
+                                </flux:select>
+                                <flux:error name="form.role" />
+                            </flux:field>
+                        </div>
+
+                        <!-- Language -->
+                        <div>
+                            <flux:field>
+                                <flux:label>Preferred Language</flux:label>
+                                <flux:select wire:model="form.language">
+                                    <flux:select.option value="en">English</flux:select.option>
+                                    <flux:select.option value="tw">Twi</flux:select.option>
+                                </flux:select>
+                                <flux:error name="form.language" />
+                            </flux:field>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end space-x-3 pt-6 border-t border-border mt-6">
+                    <flux:button href="{{ route('admin.users.index') }}" variant="ghost">
+                        Cancel
+                    </flux:button>
+                    <flux:button type="submit" variant="primary" icon="plus">
+                        Create User
+                    </flux:button>
+                </div>
+            </form>
         </div>
     </div>
-</div>
+</x-ui.admin-page-layout>

@@ -1,104 +1,172 @@
-<div class="py-6">
-    <div class="">
-        <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
-            <h2 class="text-accent text-2xl font-bold">
-                Suspicious Activity Details
-            </h2>
-            <div class="mt-4 md:mt-0">
-                <a class="text-sm text-gray-600 hover:text-gray-900 dark:text-slate-50"
-                    href="{{ route('admin.suspicious_activities.index') }}">
-                    &larr; Back to All Activities
-                </a>
-            </div>
-        </div>
+<x-ui.admin-page-layout 
+    title="Suspicious Activity #{{ $suspiciousActivity->activity_id }}"
+    description="Detailed view of suspicious activity and related information"
+    :breadcrumbs="[
+        ['label' => 'Suspicious Activities', 'url' => route('admin.suspicious_activities.index')],
+        ['label' => 'Activity #' . $suspiciousActivity->activity_id]
+    ]"
+    :show-filters="false"
+>
+    <x-slot:actions>
+        <flux:button href="{{ route('admin.suspicious_activities.index') }}" variant="ghost" icon="arrow-left">
+            Back to Activities
+        </flux:button>
+        <flux:button href="#" variant="primary" icon="flag">
+            Flag for Review
+        </flux:button>
+        <flux:button href="#" variant="success" icon="check">
+            Mark as Resolved
+        </flux:button>
+    </x-slot:actions>
 
-        <div class="overflow-hidden bg-zinc-50 shadow sm:rounded-lg dark:bg-slate-900 dark:bg-zinc-800">
-            <div class="flex items-center justify-between px-4 py-5 sm:px-6">
+    <!-- Activity Details Card -->
+    <div class="bg-card rounded-lg border border-border shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-border">
+            <div class="flex items-center justify-between">
                 <div>
-                    <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-slate-50">
-                        Activity #{{ $activity->activity_id }}
-                    </h3>
-                    <p class="mt-1 max-w-2xl text-sm text-gray-500">
-                        Detected on {{ $activity->detected_at->format('F j, Y \a\t g:i a') }}
+                    <h3 class="text-lg font-semibold text-text-primary">Activity Details</h3>
+                    <p class="text-sm text-text-secondary mt-1">
+                        Detected on {{ $suspiciousActivity->detected_at->format('M j, Y \a\t g:i A') }}
                     </p>
                 </div>
                 <div>
-                    {!! $activity->severity_badge !!}
+                    @if($suspiciousActivity->severity === 'high')
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-error/10 text-error">
+                            <flux:icon.exclamation-triangle class="w-4 h-4 mr-1" />
+                            High Risk
+                        </span>
+                    @elseif($suspiciousActivity->severity === 'medium')
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-warning/10 text-warning">
+                            <flux:icon.exclamation-circle class="w-4 h-4 mr-1" />
+                            Medium Risk
+                        </span>
+                    @elseif($suspiciousActivity->severity === 'low')
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-success/10 text-success">
+                            <flux:icon.information-circle class="w-4 h-4 mr-1" />
+                            Low Risk
+                        </span>
+                    @else
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-muted text-text-secondary">
+                            <flux:icon.question-mark-circle class="w-4 h-4 mr-1" />
+                            Unknown
+                        </span>
+                    @endif
                 </div>
             </div>
-            <div class="border-t border-gray-200">
-                <dl>
-                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-gray-700">
-                        <dt class="text-sm font-medium text-gray-500">
-                            User
-                        </dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 dark:text-slate-50">
-                            {{ $activity->user->name ?? 'Unknown' }}
-                            @if ($activity->user && $activity->user->email)
-                                <div class="mt-1 text-xs text-gray-500">{{ $activity->user->email }}</div>
-                            @endif
-                        </dd>
-                    </div>
-                    <div
-                        class="bg-zinc-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-slate-900 dark:bg-zinc-800">
-                        <dt class="text-sm font-medium text-gray-500">
-                            Entity Type
-                        </dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 dark:text-slate-50">
-                            {{ $activity->entity_type }}
-                        </dd>
-                    </div>
-                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-gray-700">
-                        <dt class="text-sm font-medium text-gray-500">
-                            Entity ID
-                        </dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 dark:text-slate-50">
-                            {{ $activity->entity_id }}
-                        </dd>
-                    </div>
-                    <div
-                        class="bg-zinc-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-slate-900 dark:bg-zinc-800">
-                        <dt class="text-sm font-medium text-gray-500">
-                            Description
-                        </dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 dark:text-slate-50">
-                            {{ $activity->description }}
-                        </dd>
-                    </div>
-                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-gray-700">
-                        <dt class="text-sm font-medium text-gray-500">
-                            Created At
-                        </dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 dark:text-slate-50">
-                            {{ $activity->created_at->format('F j, Y \a\t g:i a') }}
-                        </dd>
-                    </div>
-                    <div
-                        class="bg-zinc-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-slate-900 dark:bg-zinc-800">
-                        <dt class="text-sm font-medium text-gray-500">
-                            Updated At
-                        </dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 dark:text-slate-50">
-                            {{ $activity->updated_at->format('F j, Y \a\t g:i a') }}
-                        </dd>
-                    </div>
-                </dl>
-            </div>
-            <div class="flex justify-between border-t border-gray-200 px-4 py-5 sm:px-6">
-                <flux:button href="{{ route('admin.suspicious_activities.index') }}" variant="primary">
-                    Back to List
-                </flux:button>
+        </div>
+        <div class="px-6 py-6">
+            <dl class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <!-- User Information -->
+                <div class="sm:col-span-2">
+                    <dt class="text-sm font-medium text-text-secondary">Associated User</dt>
+                    <dd class="mt-2">
+                        @if($suspiciousActivity->user)
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    <div class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                        <span class="text-sm font-medium text-primary">
+                                            {{ strtoupper(substr($suspiciousActivity->user->name, 0, 2)) }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="ml-3">
+                                    <div class="text-sm font-medium text-text-primary">{{ $suspiciousActivity->user->name }}</div>
+                                    @if($suspiciousActivity->user->email)
+                                        <div class="text-sm text-text-secondary">{{ $suspiciousActivity->user->email }}</div>
+                                    @endif
+                                </div>
+                            </div>
+                        @else
+                            <div class="text-sm text-text-secondary">Unknown User</div>
+                        @endif
+                    </dd>
+                </div>
 
-                <!-- If you need action buttons, add them here -->
-                <div>
-                    <flux:button href="#">
-                        Flag for Review
-                    </flux:button>
-                    <flux:button href="#" variant="filled">
-                        Mark as Resolved
+                <!-- Entity Type -->
+                <div class="sm:col-span-1">
+                    <dt class="text-sm font-medium text-text-secondary">Entity Type</dt>
+                    <dd class="mt-1 text-sm text-text-primary font-medium">{{ $suspiciousActivity->entity_type ?? 'N/A' }}</dd>
+                </div>
+
+                <!-- Entity ID -->
+                <div class="sm:col-span-1">
+                    <dt class="text-sm font-medium text-text-secondary">Entity ID</dt>
+                    <dd class="mt-1 text-sm text-text-primary font-medium">{{ $suspiciousActivity->entity_id ?? 'N/A' }}</dd>
+                </div>
+
+                <!-- Description -->
+                <div class="sm:col-span-2">
+                    <dt class="text-sm font-medium text-text-secondary">Description</dt>
+                    <dd class="mt-1 text-sm text-text-primary">{{ $suspiciousActivity->description }}</dd>
+                </div>
+
+                <!-- Detection Time -->
+                <div class="sm:col-span-1">
+                    <dt class="text-sm font-medium text-text-secondary">Detected At</dt>
+                    <dd class="mt-1 text-sm text-text-primary">
+                        {{ $suspiciousActivity->detected_at->format('M j, Y g:i A') }}
+                    </dd>
+                </div>
+
+                <!-- Risk Level -->
+                <div class="sm:col-span-1">
+                    <dt class="text-sm font-medium text-text-secondary">Risk Level</dt>
+                    <dd class="mt-1">
+                        @if($suspiciousActivity->severity === 'high')
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-error/10 text-error">
+                                <flux:icon.exclamation-triangle class="w-3 h-3 mr-1" />
+                                High Risk
+                            </span>
+                        @elseif($suspiciousActivity->severity === 'medium')
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warning/10 text-warning">
+                                <flux:icon.exclamation-circle class="w-3 h-3 mr-1" />
+                                Medium Risk
+                            </span>
+                        @elseif($suspiciousActivity->severity === 'low')
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">
+                                <flux:icon.information-circle class="w-3 h-3 mr-1" />
+                                Low Risk
+                            </span>
+                        @else
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-text-secondary">
+                                <flux:icon.question-mark-circle class="w-3 h-3 mr-1" />
+                                Unknown
+                            </span>
+                        @endif
+                    </dd>
+                </div>
+
+                <!-- Created At -->
+                <div class="sm:col-span-1">
+                    <dt class="text-sm font-medium text-text-secondary">Record Created</dt>
+                    <dd class="mt-1 text-sm text-text-primary">{{ $suspiciousActivity->created_at->format('M j, Y g:i A') }}</dd>
+                </div>
+
+                <!-- Updated At -->
+                <div class="sm:col-span-1">
+                    <dt class="text-sm font-medium text-text-secondary">Last Updated</dt>
+                    <dd class="mt-1 text-sm text-text-primary">{{ $suspiciousActivity->updated_at->format('M j, Y g:i A') }}</dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+
+    @if($suspiciousActivity->user)
+        <!-- Related User Activities -->
+        <div class="mt-6 bg-card rounded-lg border border-border shadow-sm">
+            <div class="px-6 py-4 border-b border-border">
+                <h3 class="text-lg font-semibold text-text-primary">User Activity Summary</h3>
+                <p class="text-sm text-text-secondary mt-1">Recent activities from this user account</p>
+            </div>
+            <div class="px-6 py-4">
+                <div class="text-center py-8">
+                    <flux:icon.clock class="w-8 h-8 text-text-secondary mx-auto mb-2" />
+                    <p class="text-text-secondary text-sm">User activity details can be implemented here</p>
+                    <flux:button href="{{ route('admin.users.show', $suspiciousActivity->user) }}" variant="ghost" class="mt-3" icon="user">
+                        View User Profile
                     </flux:button>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+    @endif
+</x-ui.admin-page-layout>

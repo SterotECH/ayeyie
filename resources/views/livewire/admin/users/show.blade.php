@@ -1,104 +1,127 @@
-<div>
-    <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
-        <!-- User Information Section -->
-        <div class="overflow-hidden bg-zinc-50 shadow sm:rounded-lg dark:bg-slate-800 dark:bg-zinc-800">
-            <div class="px-4 py-5 sm:px-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-accent text-lg font-medium leading-6">User Information</h3>
-                        <p class="text-accent-content/50 mt-1 max-w-2xl text-sm">Personal details and account
-                            information.</p>
-                    </div>
-                    <div class="flex space-x-2">
-                        <a href="{{ route('admin.users.edit', $user->user_id) }}">
-                            <flux:button>
-                                Edit User
-                            </flux:button>
-                        </a>
-                        <flux:button variant="danger" wire:click="confirmDelete">
-                            Delete User
-                        </flux:button>
+<x-ui.admin-page-layout 
+    title="{{ $user->name }}"
+    description="View and manage user details"
+    :breadcrumbs="[
+        ['label' => 'Users', 'url' => route('admin.users.index')],
+        ['label' => $user->name]
+    ]"
+    :show-filters="false"
+>
+    <x-slot:actions>
+        <flux:button href="{{ route('admin.users.edit', $user->user_id) }}" icon="pencil">
+            Edit User
+        </flux:button>
+        <flux:button variant="danger" wire:click="confirmDelete" icon="trash">
+            Delete User
+        </flux:button>
+    </x-slot:actions>
+
+    <!-- User Information Card -->
+    <div class="bg-card rounded-lg border border-border shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-border">
+            <div class="flex items-center">
+                <div class="flex-shrink-0 h-16 w-16">
+                    <div class="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
+                        <span class="text-xl font-semibold text-primary">
+                            {{ strtoupper(substr($user->name, 0, 2)) }}
+                        </span>
                     </div>
                 </div>
-            </div>
-            <div class="dark:border-accent border-t border-gray-200">
-                <dl>
-                    <div
-                        class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-gray-700 dark:bg-slate-900">
-                        <dt class="text-sm font-medium text-gray-500 dark:text-white">Full name</dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 dark:text-gray-50">
-                            {{ $user->name }}</dd>
-                    </div>
-                    <div
-                        class="bg-zinc-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-slate-800 dark:bg-zinc-800">
-                        <dt class="text-sm font-medium text-gray-500 dark:text-white">Role</dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 dark:text-gray-50">
-                            <span
-                                class="{{ $user->role === 'admin'
-                                    ? 'bg-purple-100 text-purple-800'
-                                    : ($user->role === 'staff'
-                                        ? 'bg-blue-100 text-blue-800'
-                                        : 'bg-green-100 text-green-800') }} inline-flex rounded-full px-3 py-1 text-xs font-semibold">
-                                {{ ucfirst($user->role) }}
-                            </span>
-                        </dd>
-                    </div>
-                    <div
-                        class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-gray-700 dark:bg-slate-900">
-                        <dt class="text-sm font-medium text-gray-500 dark:text-white">Email address</dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 dark:text-gray-50">
-                            {{ $user->email ?? 'Not provided' }}</dd>
-                    </div>
-                    <div
-                        class="bg-zinc-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-slate-800 dark:bg-zinc-800">
-                        <dt class="text-sm font-medium text-gray-500 dark:text-white">Phone number</dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 dark:text-gray-50">
-                            {{ $user->phone }}</dd>
-                    </div>
-                    <div
-                        class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-gray-700 dark:bg-slate-900">
-                        <dt class="text-sm font-medium text-gray-500 dark:text-white">Language</dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 dark:text-gray-50">
-                            {{ $user->language === 'en' ? 'English' : 'Twi' }}
-                        </dd>
-                    </div>
-                    <div
-                        class="bg-zinc-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-slate-800 dark:bg-zinc-800">
-                        <dt class="text-sm font-medium text-gray-500 dark:text-white">Account created</dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 dark:text-gray-50">
-                            {{ $user->created_at->format('F j, Y g:i A') }}</dd>
-                    </div>
-                    <div
-                        class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-gray-700 dark:bg-slate-900">
-                        <dt class="text-sm font-medium text-gray-500 dark:text-white">Last updated</dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 dark:text-gray-50">
-                            {{ $user->updated_at->format('F j, Y g:i A') }}</dd>
-                    </div>
-                </dl>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-text-primary">{{ $user->name }}</h3>
+                    <p class="text-text-secondary">ID: {{ $user->user_id }}</p>
+                </div>
             </div>
         </div>
+        <div class="px-6 py-4">
+            <dl class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div class="sm:col-span-1">
+                    <dt class="text-sm font-medium text-text-secondary">Full name</dt>
+                    <dd class="mt-1 text-sm text-text-primary font-medium">{{ $user->name }}</dd>
+                </div>
+                <div class="sm:col-span-1">
+                    <dt class="text-sm font-medium text-text-secondary">Role</dt>
+                    <dd class="mt-1">
+                        @if($user->role === 'admin')
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-error/10 text-error">
+                                <flux:icon.shield-check class="w-3 h-3 mr-1" />
+                                Administrator
+                            </span>
+                        @elseif($user->role === 'manager')
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warning/10 text-warning">
+                                <flux:icon.user-group class="w-3 h-3 mr-1" />
+                                Manager
+                            </span>
+                        @else
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">
+                                <flux:icon.user class="w-3 h-3 mr-1" />
+                                User
+                            </span>
+                        @endif
+                    </dd>
+                </div>
+                <div class="sm:col-span-1">
+                    <dt class="text-sm font-medium text-text-secondary">Email address</dt>
+                    <dd class="mt-1 text-sm text-text-primary">{{ $user->email ?? 'Not provided' }}</dd>
+                </div>
+                <div class="sm:col-span-1">
+                    <dt class="text-sm font-medium text-text-secondary">Phone number</dt>
+                    <dd class="mt-1 text-sm text-text-primary">{{ $user->phone ?? 'Not provided' }}</dd>
+                </div>
+                <div class="sm:col-span-1">
+                    <dt class="text-sm font-medium text-text-secondary">Language</dt>
+                    <dd class="mt-1 text-sm text-text-primary">{{ $user->language === 'en' ? 'English' : 'Twi' }}</dd>
+                </div>
+                <div class="sm:col-span-1">
+                    <dt class="text-sm font-medium text-text-secondary">Account status</dt>
+                    <dd class="mt-1">
+                        @if($user->email_verified_at)
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">
+                                <flux:icon.check-circle class="w-3 h-3 mr-1" />
+                                Verified
+                            </span>
+                        @else
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warning/10 text-warning">
+                                <flux:icon.clock class="w-3 h-3 mr-1" />
+                                Pending Verification
+                            </span>
+                        @endif
+                    </dd>
+                </div>
+                <div class="sm:col-span-1">
+                    <dt class="text-sm font-medium text-text-secondary">Account created</dt>
+                    <dd class="mt-1 text-sm text-text-primary">{{ $user->created_at->format('M j, Y g:i A') }}</dd>
+                </div>
+                <div class="sm:col-span-1">
+                    <dt class="text-sm font-medium text-text-secondary">Last updated</dt>
+                    <dd class="mt-1 text-sm text-text-primary">{{ $user->updated_at->format('M j, Y g:i A') }}</dd>
+                </div>
+            </dl>
+        </div>
+    </div>
 
-        <!-- Tabs Section -->
-        <div class="mt-6">
-            <div class="border-b border-gray-200">
-                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+    <!-- Tabs Section -->
+    <div class="mt-6">
+        <div class="bg-card rounded-lg border border-border shadow-sm overflow-hidden">
+            <div class="border-b border-border">
+                <nav class="flex space-x-8 px-6" aria-label="Tabs">
                     <button
-                        class="{{ $activeTab === 'transactions' ? 'border-accent text-accent' : 'border-transparent text-gray-500 dark:text-white hover:border-gray-300 hover:text-gray-700' }} whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium"
+                        class="{{ $activeTab === 'transactions' ? 'border-primary text-primary' : 'border-transparent text-text-secondary hover:border-muted hover:text-text-primary' }} whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium"
                         wire:click="$set('activeTab', 'transactions')">
                         Transactions
                     </button>
                     <button
-                        class="{{ $activeTab === 'pickups' ? 'border-accent text-accent' : 'border-transparent text-gray-500 dark:text-white hover:border-gray-300 hover:text-gray-700' }} whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium"
+                        class="{{ $activeTab === 'pickups' ? 'border-primary text-primary' : 'border-transparent text-text-secondary hover:border-muted hover:text-text-primary' }} whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium"
                         wire:click="$set('activeTab', 'pickups')">
                         Pickups
                     </button>
                     <button
-                        class="{{ $activeTab === 'suspicious' ? 'border-accent text-accent' : 'border-transparent text-gray-500 dark:text-white hover:border-gray-300 hover:text-gray-700' }} whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium"
+                        class="{{ $activeTab === 'suspicious' ? 'border-primary text-primary' : 'border-transparent text-text-secondary hover:border-muted hover:text-text-primary' }} whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium"
                         wire:click="$set('activeTab', 'suspicious')">
                         Suspicious Activities
                     </button>
                     <button
-                        class="{{ $activeTab === 'audit' ? 'border-accent text-accent' : 'border-transparent text-gray-500 dark:text-white hover:border-gray-300 hover:text-gray-700' }} whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium"
+                        class="{{ $activeTab === 'audit' ? 'border-primary text-primary' : 'border-transparent text-text-secondary hover:border-muted hover:text-text-primary' }} whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium"
                         wire:click="$set('activeTab', 'audit')">
                         Audit Logs
                     </button>
@@ -106,53 +129,61 @@
             </div>
 
             <!-- Tab Content -->
-            <div class="mt-6">
+            <div class="p-6">
                 @if ($activeTab === 'transactions')
                     <div id="transactions-tab">
-                        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-50">Transactions</h3>
-                        <p class="mt-1 text-sm text-gray-500 dark:text-white">
-                            {{ $user->role === 'customer' ? 'Transactions made by this customer' : 'Transactions processed by this staff member' }}
-                        </p>
+                        <div class="mb-4">
+                            <h3 class="text-lg font-semibold text-text-primary">Transactions</h3>
+                            <p class="text-sm text-text-secondary">
+                                {{ $user->role === 'customer' ? 'Transactions made by this customer' : 'Transactions processed by this staff member' }}
+                            </p>
+                        </div>
 
-                        <div class="mt-4 rounded-md border">
-                            <!-- Transaction data will be loaded here -->
-                            <p class="p-4 text-sm text-gray-500 dark:text-white">Loading transactions...</p>
+                        <div class="bg-muted/50 rounded-lg p-8 text-center">
+                            <flux:icon.clock class="w-8 h-8 text-text-secondary mx-auto mb-2" />
+                            <p class="text-text-secondary text-sm">Loading transactions...</p>
                         </div>
                     </div>
                 @elseif ($activeTab === 'pickups')
                     <div id="pickups-tab">
-                        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-50">Pickups</h3>
-                        <p class="mt-1 text-sm text-gray-500 dark:text-white">
-                            {{ $user->role === 'customer' ? 'Pickups made by this customer' : 'Pickups processed by this staff member' }}
-                        </p>
+                        <div class="mb-4">
+                            <h3 class="text-lg font-semibold text-text-primary">Pickups</h3>
+                            <p class="text-sm text-text-secondary">
+                                {{ $user->role === 'customer' ? 'Pickups made by this customer' : 'Pickups processed by this staff member' }}
+                            </p>
+                        </div>
 
-                        <div class="mt-4 rounded-md border">
-                            <!-- Pickup data will be loaded here -->
-                            <p class="p-4 text-sm text-gray-500 dark:text-white">Loading pickups...</p>
+                        <div class="bg-muted/50 rounded-lg p-8 text-center">
+                            <flux:icon.clock class="w-8 h-8 text-text-secondary mx-auto mb-2" />
+                            <p class="text-text-secondary text-sm">Loading pickups...</p>
                         </div>
                     </div>
                 @elseif ($activeTab === 'suspicious')
                     <div id="suspicious-tab">
-                        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-50">Suspicious Activities</h3>
-                        <p class="mt-1 text-sm text-gray-500 dark:text-white">
-                            Suspicious activities linked to this account
-                        </p>
+                        <div class="mb-4">
+                            <h3 class="text-lg font-semibold text-text-primary">Suspicious Activities</h3>
+                            <p class="text-sm text-text-secondary">
+                                Suspicious activities linked to this account
+                            </p>
+                        </div>
 
-                        <div class="mt-4 rounded-md border">
-                            <!-- Suspicious activities data will be loaded here -->
-                            <p class="p-4 text-sm text-gray-500 dark:text-white">Loading suspicious activities...</p>
+                        <div class="bg-muted/50 rounded-lg p-8 text-center">
+                            <flux:icon.clock class="w-8 h-8 text-text-secondary mx-auto mb-2" />
+                            <p class="text-text-secondary text-sm">Loading suspicious activities...</p>
                         </div>
                     </div>
                 @elseif ($activeTab === 'audit')
                     <div id="audit-tab">
-                        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-50">Audit Logs</h3>
-                        <p class="mt-1 text-sm text-gray-500 dark:text-white">
-                            System actions performed by or related to this user
-                        </p>
+                        <div class="mb-4">
+                            <h3 class="text-lg font-semibold text-text-primary">Audit Logs</h3>
+                            <p class="text-sm text-text-secondary">
+                                System actions performed by or related to this user
+                            </p>
+                        </div>
 
-                        <div class="mt-4 rounded-md border">
-                            <!-- Audit logs data will be loaded here -->
-                            <p class="p-4 text-sm text-gray-500 dark:text-white">Loading audit logs...</p>
+                        <div class="bg-muted/50 rounded-lg p-8 text-center">
+                            <flux:icon.clock class="w-8 h-8 text-text-secondary mx-auto mb-2" />
+                            <p class="text-text-secondary text-sm">Loading audit logs...</p>
                         </div>
                     </div>
                 @endif
@@ -161,52 +192,31 @@
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div x-data="{ show: @entangle('showDeleteModal') }">
-        <div class="fixed inset-0 z-10 overflow-y-auto" role="dialog" aria-labelledby="modal-title" aria-modal="true"
-            style="display: none;" x-show="show">
-            <div class="flex min-h-screen items-end justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 bg-gray-50 backdrop-blur-sm transition-opacity dark:bg-black/75 dark:bg-gray-700"
-                    aria-hidden="true" x-show="show"></div>
-                <span class="hidden sm:inline-block sm:h-screen sm:align-middle" aria-hidden="true">&#8203;</span>
-                <div class="inline-block transform overflow-hidden rounded-lg bg-zinc-50 text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle dark:bg-slate-800 dark:bg-zinc-800"
-                    x-show="show">
-                    <div class="bg-zinc-50 px-4 pb-4 pt-5 sm:p-6 sm:pb-4 dark:bg-slate-800 dark:bg-zinc-800">
-                        <div class="sm:flex sm:items-start">
-                            <div
-                                class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                                <!-- Heroicon name: outline/exclamation -->
-                                <svg class="h-6 w-6 text-red-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                </svg>
-                            </div>
-                            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                                <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-50"
-                                    id="modal-title">
-                                    Delete User
-                                </h3>
-                                <div class="mt-2">
-                                    <p class="text-sm text-gray-500 dark:text-white">
-                                        Are you sure you want to delete this user? All of their data will be permanently
-                                        removed.
-                                        This action cannot be undone.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div
-                        class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 dark:bg-gray-700 dark:bg-slate-900">
-                        <flux:button class="sm:ml-3" variant="danger" wire:click="deleteUser">
-                            Delete
-                        </flux:button>
-                        <flux:button class="mt-3 sm:mt-0" wire:click="$set('showDeleteModal', false)">
-                            Cancel
-                        </flux:button>
+    <flux:modal name="delete-user" class="md:w-96" :show="$showDeleteModal">
+        <div class="space-y-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-10 h-10 bg-error/10 rounded-lg flex items-center justify-center">
+                        <flux:icon.exclamation-triangle class="w-5 h-5 text-error" />
                     </div>
                 </div>
+                <div class="ml-3">
+                    <flux:heading size="lg">Delete User</flux:heading>
+                </div>
+            </div>
+            
+            <p class="text-sm text-text-secondary">
+                Are you sure you want to delete <strong>{{ $user->name }}</strong>? This action cannot be undone and will permanently remove all user data.
+            </p>
+            
+            <div class="flex items-center justify-end space-x-3 pt-4 border-t border-border">
+                <flux:button wire:click="$set('showDeleteModal', false)" variant="ghost">
+                    Cancel
+                </flux:button>
+                <flux:button wire:click="deleteUser" variant="danger" icon="trash">
+                    Delete User
+                </flux:button>
             </div>
         </div>
-    </div>
-</div>
+    </flux:modal>
+</x-ui.admin-page-layout>

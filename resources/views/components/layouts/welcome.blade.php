@@ -9,33 +9,47 @@
         @fluxAppearance
     </head>
 
-    <body class="flex min-h-screen flex-col items-center bg-[#FDFDFC] text-[#1b1b18] dark:bg-[#0a0a0a]">
-        <header class="not-has-[nav]:hidden w-full max-w-[335px] p-6 text-sm lg:p-8">
-            @if (Route::has('login'))
-                <nav class="flex items-center justify-end gap-4">
-                    @auth
-                        <a class="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
-                            href="{{ url('/dashboard') }}">
-                            Dashboard
-                        </a>
-                    @else
-                        <a class="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
-                            href="{{ route('login') }}">
-                            Log in
-                        </a>
+    <body class="min-h-screen bg-background text-text-primary">
+        <header class="absolute top-0 left-0 right-0 z-50 p-6 lg:p-8">
+            <nav class="flex items-center justify-between max-w-7xl mx-auto">
+                <!-- App Logo/Name -->
+                <div class="flex items-center">
+                    <div class="size-8 bg-primary rounded-lg flex items-center justify-center mr-3">
+                        <flux:icon.cube class="size-6 text-background" />
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold text-text-primary">{{ config('app.name', 'Ayeyie') }}</h1>
+                        <p class="text-xs text-text-secondary hidden sm:block">Poultry Feed Management</p>
+                    </div>
+                </div>
 
-                        @if (Route::has('register'))
-                            <a class="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
-                                href="{{ route('register') }}">
-                                Register
+                <!-- Navigation Links -->
+                @if (Route::has('login'))
+                    <div class="flex items-center gap-4">
+                        @auth
+                            <a class="inline-flex items-center px-4 py-2 text-sm font-medium text-background bg-card hover:bg-card-hover border border-border rounded-lg transition-colors"
+                                href="{{ url('/dashboard') }}">
+                                Dashboard
                             </a>
-                        @endif
-                    @endauth
-                </nav>
-            @endif
+                        @else
+                            <a class="inline-flex items-center px-4 py-2 text-sm font-medium text-text-primary hover:text-primary border border-transparent hover:border-border rounded-lg transition-colors"
+                                href="{{ route('login') }}">
+                                Log in
+                            </a>
+
+                            @if (Route::has('register'))
+                                <a class="inline-flex items-center px-4 py-2 text-sm font-medium text-background bg-primary hover:bg-primary-hover rounded-lg transition-colors"
+                                    href="{{ route('register') }}">
+                                    Register
+                                </a>
+                            @endif
+                        @endauth
+                    </div>
+                @endif
+            </nav>
         </header>
 
-        <main>
+        <main class="w-full">
             {{ $slot }}
         </main>
 
